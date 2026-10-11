@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Achterbahn">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F6EEDC">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<style>
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; font: 14px system-ui, sans-serif; }
+[hidden] { display: none !important; }
+</style>
+<title>Achterbahn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: eine Spalte, Handy zuerst. Oben Karo-Band, dann die Bahn (SVG) als Hauptfläche,
+   darunter Anzeige, Regler, Durchsage, Fahrtenbuch. Beim Öffnen läuft ein kurzer Kamerazoom. */
+:root {
+  --bg: #F6EEDC;
+  --card: #FFF9EC;
+  --ink: #2B1B12;
+  --muted: #7A6652;
+  --line: #E3D3B6;
+  --red: #B3302A;
+  --on-red: #FFF6E6;
+  --wood: #A06A38;
+  --wood-dark: #6A4426;
+  --rail: #2B1B12;
+  --ok: #3C7A55;
+  --warn: #B9780F;
+  --hot: #B3302A;
+  --font-display: "Bricolage Grotesque", "Arial Black", "Helvetica Neue", sans-serif;
+  --font-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1D1611; --card: #2A2018; --ink: #F4E8D2; --muted: #B7A388; --line: #43342A;
+    --red: #E0584C; --on-red: #1D1611; --wood: #B98250; --wood-dark: #8A6140; --rail: #F0DDB8;
+    --ok: #6CC08E; --warn: #E4A640; --hot: #F0675B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1D1611; --card: #2A2018; --ink: #F4E8D2; --muted: #B7A388; --line: #43342A;
+  --red: #E0584C; --on-red: #1D1611; --wood: #B98250; --wood-dark: #8A6140; --rail: #F0DDB8;
+  --ok: #6CC08E; --warn: #E4A640; --hot: #F0675B;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.45; }
+.checker { height: 16px; background: conic-gradient(var(--red) 25%, var(--bg) 0 50%, var(--red) 0 75%, var(--bg) 0) 0 0 / 16px 16px; }
+.wrap { max-width: 520px; margin-inline: auto; padding-inline: 16px; padding-block: 16px 40px; display: flex; flex-direction: column; gap: 14px; }
+
+.after { transition: opacity .7s ease; }
+body.intro .after { opacity: 0; pointer-events: none; }
+
+header { display: flex; flex-direction: column; gap: 2px; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(44px, 15vw, 64px); line-height: 1; margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
+
+.card { background: var(--card); border: 2px solid var(--ink); border-radius: 18px; }
+.track-card { padding: 0 0 10px; overflow: hidden; }
+svg { display: block; width: 100%; height: auto; touch-action: auto; user-select: none; -webkit-user-select: none; }
+svg text { font-family: var(--font-body); fill: var(--muted); font-weight: 700; letter-spacing: .1em; }
+.drag-hint { margin: 4px 8px 0; font-size: 13px; color: var(--muted); text-align: center; }
+
+.readout { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; }
+.big { font-family: var(--font-display); font-weight: 800; font-size: 64px; line-height: .9; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.big small { font-size: 28px; margin-left: 2px; }
+.sign { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; text-align: right; min-width: 0; }
+.sign .zone { font-family: var(--font-display); font-weight: 800; font-size: 20px; line-height: 1; padding: 7px 14px; border-radius: 999px; color: var(--card); background: var(--zone-color, var(--ok)); border: 2px solid var(--ink); }
+.sign .exit { font-size: 13px; font-weight: 600; color: var(--muted); }
+
+.controls { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.controls label.cap { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; background: transparent; margin: 0; }
+input[type=range]::-webkit-slider-runnable-track { height: 12px; border-radius: 8px; box-shadow: 0 0 0 2px var(--ink); background: linear-gradient(90deg, var(--ok) calc(17px + (100% - 34px) * .375), var(--warn) calc(17px + (100% - 34px) * .375) calc(17px + (100% - 34px) * .675), var(--hot) calc(17px + (100% - 34px) * .675)); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 34px; height: 34px; margin-top: -11px; border-radius: 50%; background: var(--red); border: 3px solid var(--ink); box-shadow: 0 2px 0 var(--ink); }
+input[type=range]::-moz-range-track { height: 12px; border-radius: 8px; box-shadow: 0 0 0 2px var(--ink); background: linear-gradient(90deg, var(--ok) calc(14px + (100% - 28px) * .375), var(--warn) calc(14px + (100% - 28px) * .375) calc(14px + (100% - 28px) * .675), var(--hot) calc(14px + (100% - 28px) * .675)); }
+input[type=range]::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: var(--red); border: 3px solid var(--ink); box-sizing: border-box; }
+input[type=range]:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 8px; }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.seg button, .primary { font: inherit; font-weight: 700; min-height: 48px; border-radius: 999px; border: 2px solid var(--ink); background: var(--card); color: var(--ink); cursor: pointer; padding-inline: 14px; }
+.seg button[aria-pressed="true"] { background: var(--red); color: var(--on-red); }
+.primary { background: var(--ink); color: var(--card); font-family: var(--font-display); font-size: 18px; width: 100%; }
+button:focus-visible, input[type=text]:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+button:active { transform: translateY(1px); }
+
+.announce { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border-left-width: 10px; border-left-color: var(--zone-color, var(--ok)); }
+.announce .cap { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.announce p { transition: opacity .15s ease; margin: 0; font-size: 18px; font-weight: 600; text-wrap: pretty; }
+
+.log-form { display: flex; flex-direction: column; gap: 10px; }
+input[type=text] { font: inherit; min-height: 48px; width: 100%; border: 2px solid var(--ink); border-radius: 12px; padding-inline: 14px; background: var(--card); color: var(--ink); }
+input[type=text]::placeholder { color: var(--muted); }
+
+h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin: 8px 0 0; letter-spacing: -0.01em; }
+.empty { color: var(--muted); padding: 16px; border: 2px dashed var(--line); border-radius: 12px; margin: 0; }
+.foot { font-size: 13px; color: var(--muted); margin-top: 6px; text-wrap: pretty; }
+.status { min-height: 1.4em; font-size: 14px; font-weight: 600; color: var(--ok); margin: 0; }
+.secondary { font: inherit; font-weight: 700; min-height: 44px; border-radius: 999px; border: 2px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; padding-inline: 16px; }
+.rideline { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 14px; font-weight: 600; color: var(--muted); }
+.checkin { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-left-width: 10px; border-left-color: var(--warn); }
+.checkin[hidden] { display: none; }
+.checkin strong { display: block; font-family: var(--font-display); font-size: 18px; }
+.checkin span { font-size: 14px; color: var(--muted); }
+.tickets { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ticket { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px 14px; background: var(--card); border: 2px dashed var(--ink); border-radius: 12px; }
+.t-head { display: flex; align-items: center; gap: 8px; }
+.t-head b { font-size: 14px; flex: 1; min-width: 0; }
+.tag { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--card); background: var(--muted); border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.tag.live { background: var(--red); }
+.del { font: inherit; border: 0; background: transparent; color: var(--muted); font-size: 22px; line-height: 1; min-width: 44px; min-height: 44px; margin: -8px -6px -8px 0; cursor: pointer; border-radius: 8px; }
+.del.armed { color: var(--red); font-size: 14px; font-weight: 700; }
+.spark { width: 100%; height: auto; max-height: 72px; touch-action: auto; }
+.t-meta { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.t-note { font-size: 14px; overflow-wrap: anywhere; }
+.empty { color: var(--muted); padding: 16px; border: 2px dashed var(--line); border-radius: 12px; margin: 0; }
+</style>
+
+</head>
+<body>
+<div class="checker" aria-hidden="true"></div>
+<main class="wrap">
+  <header>
+    <span class="eyebrow">Wo stehst du gerade?</span>
+    <h1>Achterbahn</h1>
+  </header>
+
+  <section class="card checkin after" id="checkin" hidden aria-live="polite">
+    <div>
+      <strong id="ciTitle">Fahrt läuft seit 30 Min.</strong>
+      <span id="ciSub"></span>
+    </div>
+    <button id="ciEnd" class="secondary" type="button">Fahrt beenden</button>
+  </section>
+
+  <section class="card track-card" aria-label="Bahnstrecke">
+    <svg id="track" viewBox="0 0 360 256" role="img" aria-label="Glockenförmige Holzachterbahn. Der Wagen zeigt deine aktuelle Auslastung."></svg>
+    <p class="drag-hint" id="dragHint">Wagen ziehen oder Regler nutzen</p>
+  </section>
+
+  <section class="card readout after" aria-label="Anzeige">
+    <div class="big" id="pct" aria-hidden="true">45<small>%</small></div>
+    <div class="sign" id="sign" style="--zone-color: var(--warn)">
+      <span class="zone" id="zoneName">Lifthill</span>
+      <span class="exit" id="zoneExit">Ausstieg noch möglich</span>
+    </div>
+  </section>
+
+  <section class="card controls after" aria-label="Eingabe">
+    <label class="cap" for="level">Auslastung, 0 Schlaf bis 100 Platzen</label>
+    <input id="level" type="range" min="0" max="100" step="5" value="20">
+    <label class="cap" id="dirCap">Wie entwickelt es sich gerade?</label>
+    <div class="seg" role="group" aria-labelledby="dirCap">
+      <button id="dirUp" type="button" aria-pressed="true">↗ Wird mehr</button>
+      <button id="dirDown" type="button" aria-pressed="false">↘ Lässt nach</button>
+    </div>
+  </section>
+
+  <section class="card announce after" id="announce" style="--zone-color: var(--warn)" aria-live="polite">
+    <span class="cap">Durchsage</span>
+    <p id="hint"></p>
+  </section>
+
+  <section class="log-form after">
+    <button id="save" class="primary" type="button">Festhalten</button>
+    <p class="status" id="status" aria-live="polite"></p>
+    <div class="rideline">
+      <span id="rideInfo">Keine Fahrt offen</span>
+      <button id="endRide" class="secondary" type="button" hidden>Fahrt beenden</button>
+    </div>
+  </section>
+
+  <section class="after">
+    <h2>Fahrtenbuch</h2>
+    <ul class="tickets" id="tickets"></ul>
+  </section>
+
+  <p class="foot after">Ein Hilfsmittel, kein Ersatz für Therapie. Akut in Not: 112 oder Telefonseelsorge 0800 111 0 111 (kostenlos, rund um die Uhr).</p>
+</main>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var XC = 180, SX = 49;                       // Hauptkuppe: Mitte und Breite
+  var Y0 = 210, Y1 = 36, GROUND = 228;         // Schienenhöhe bei 0 und bei 100, Bodenkante
+  var DX = 7, DY = -6;                         // Tiefenversatz der hinteren Schiene
+  var XMIN = -440, XMAX = 800, STEP = 3;       // Länge der ganzen Anlage
+  var CAR_SCALE = 1.2;
+  var HILLS = [[-290, 105, 0.55], [450, 90, 0.45], [600, 80, 0.28]]; // Mitte, Breite, Höhe
+  var LOOP = { ex: -120, R: 50, D: 28 };       // Looping im Hintergrund: Einfahrt, Radius, Versatz
+  var WIDE_W = 1020, WIDE_H = WIDE_W * 256 / 360, WIDE_CY = 228 - 0.8 * WIDE_H + WIDE_H / 2;
+
+  var ZONES = {
+    station: { name: "Station", exit: "Ausstieg jederzeit", color: "var(--ok)" },
+    lift:    { name: "Lifthill", exit: "Ausstieg noch möglich", color: "var(--warn)" },
+    kuppe:   { name: "Kuppe", exit: "Bügel geschlossen", color: "var(--hot)" }
+  };
+  var HINTS = {
+    "up-station":   "Der Wagen rollt an. Jetzt ist aussteigen am leichtesten: Ort wechseln, Wasser trinken, einmal lang ausatmen.",
+    "up-lift":      "Die Kette zieht an, aber der Notausstieg ist noch da. Geh raus aus der Situation, such Abstand und atme länger aus als ein. Von hier ist der Weg zurück kurz.",
+    "up-kuppe":     "Gleich über der Kuppe. Jetzt zählt Sicherheit: Situation verlassen, nichts Wichtiges entscheiden oder schreiben, jemanden anrufen, der dich kennt.",
+    "down-kuppe":   "Du bist in der Abfahrt, und sie geht vorbei. Bügel geschlossen lassen, nichts Neues anfangen. Langsam ausatmen, Füße am Boden spüren.",
+    "down-lift":    "Es geht bergab. Nicht wieder hochfahren: etwas trinken, bewegen, ruhig beschäftigen, Reize runter.",
+    "down-station": "Einfahrt in die Station. Halte kurz fest, was geholfen hat, und trag die Fahrt ein."
+  };
+
+  var svg = document.getElementById("track");
+  var levelEl = document.getElementById("level");
+  var state = { level: 45, dir: "up" };
+
+  // ---- Strecke ----
+  function main(x) { return Math.exp(-Math.pow(x - XC, 2) / (2 * SX * SX)); }
+  function hills(x) {
+    var h = 0;
+    HILLS.forEach(function (b) {
+      var u = (x - b[0]) / b[1];
+      if (Math.abs(u) < 1) { var c = 0.5 + 0.5 * Math.cos(Math.PI * u); h += b[2] * c * c; }
+    });
+    return h;
+  }
+  function yOf(x) { return Y0 - Math.min(1, main(x) + hills(x)) * (Y0 - Y1); }
+  function yAt(level) { return Y0 - (level / 100) * (Y0 - Y1); }
+  function levelToX(level, dir) {
+    var f = Math.max(level / 100, 0.03);
+    var d = SX * Math.sqrt(-2 * Math.log(f));
+    return XC + (dir === "up" ? -d : d);
+  }
+  function zoneKey(l) { return l <= 35 ? "station" : l <= 65 ? "lift" : "kuppe"; }
+
+  var P = [], S = [0], i0, x;
+  for (x = XMIN; x < LOOP.ex; x += STEP) P.push([x, yOf(x)]);
+  var loopFrom = P.length;
+  for (var a = 0; a < 360; a += 3) {
+    var th = a * Math.PI / 180;
+    P.push([LOOP.ex + LOOP.R * Math.sin(th) + LOOP.D * th / (2 * Math.PI), Y0 - LOOP.R + LOOP.R * Math.cos(th)]);
+  }
+  var loopTo = P.length;
+  for (x = Math.ceil((LOOP.ex + LOOP.D) / STEP) * STEP; x <= XMAX; x += STEP) P.push([x, yOf(x)]);
+  for (i0 = 1; i0 < P.length; i0++) S[i0] = S[i0 - 1] + Math.hypot(P[i0][0] - P[i0 - 1][0], P[i0][1] - P[i0 - 1][1]);
+  function sOfX(x) {
+    for (var i = 0; i < P.length - 1; i++) {
+      if (P[i][0] <= x && x <= P[i + 1][0]) return S[i] + (S[i + 1] - S[i]) * ((x - P[i][0]) / ((P[i + 1][0] - P[i][0]) || 1));
+    }
+    return x < 0 ? 0 : S[S.length - 1];
+  }
+  function supportY(x) {          // tiefster Schienenpunkt an dieser Stelle (hier steht das Gerüst)
+    var m = -1e9;
+    for (var i = 0; i < P.length; i++) if (Math.abs(P[i][0] - x) <= 2.5 && P[i][1] > m) m = P[i][1];
+    return m > -1e8 ? m : yOf(x);
+  }
+  function pose(s) {
+    s = Math.min(S[S.length - 1], Math.max(0, s));
+    var lo = 0, hi = S.length - 1, m;
+    while (hi - lo > 1) { m = (lo + hi) >> 1; if (S[m] <= s) lo = m; else hi = m; }
+    var u = (s - S[lo]) / ((S[hi] - S[lo]) || 1);
+    return {
+      x: P[lo][0] + (P[hi][0] - P[lo][0]) * u,
+      y: P[lo][1] + (P[hi][1] - P[lo][1]) * u,
+      ang: Math.atan2(P[hi][1] - P[lo][1], P[hi][0] - P[lo][0]) * 180 / Math.PI
+    };
+  }
+  function pathD() {
+    var d = "";
+    P.forEach(function (p, i) { d += (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); });
+    return d;
+  }
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  // ---- Wagen ----
+  function mkCar(parent, lead) {
+    var c = el("g", {}, parent);
+    el("rect", { x: -18, y: -30, width: 36, height: 30, fill: "transparent" }, c);
+    el("line", { x1: -20, y1: -5, x2: 20, y2: -5, stroke: "var(--ink)", "stroke-width": 2 }, c);
+    el("circle", { cx: -6, cy: -24, r: 3.6, fill: "var(--card)", stroke: "var(--ink)", "stroke-width": 1.8 }, c);
+    el("circle", { cx: 6, cy: -24, r: 3.6, fill: "var(--card)", stroke: "var(--ink)", "stroke-width": 1.8 }, c);
+    el("rect", { x: -15, y: -7, width: 30, height: 3.5, fill: "var(--ink)" }, c);
+    el("path", { d: "M-14 -6 L-16.5 -18 L16.5 -18 L14 -6 Z", fill: "var(--wood)", stroke: "var(--ink)", "stroke-width": 1.8, "stroke-linejoin": "round" }, c);
+    el("line", { x1: -15.2, y1: -12, x2: 15.2, y2: -12, stroke: "var(--ink)", "stroke-width": 1, opacity: ".5" }, c);
+    el("line", { x1: -8, y1: -17, x2: -8, y2: -7, stroke: "var(--ink)", "stroke-width": 1.6, opacity: ".7" }, c);
+    el("line", { x1: 8, y1: -17, x2: 8, y2: -7, stroke: "var(--ink)", "stroke-width": 1.6, opacity: ".7" }, c);
+    el("rect", { x: -18, y: -21, width: 36, height: 3.6, rx: 1.8, fill: "var(--red)", stroke: "var(--ink)", "stroke-width": 1.6 }, c);
+    [-8, 8].forEach(function (cx) {
+      el("circle", { cx: cx, cy: -2.6, r: 3.3, fill: "var(--card)", stroke: "var(--ink)", "stroke-width": 1.8 }, c);
+      el("circle", { cx: cx, cy: -2.6, r: 0.9, fill: "var(--ink)" }, c);
+    });
+    if (lead) el("circle", { cx: 18.5, cy: -13, r: 2.8, fill: "var(--warn)", stroke: "var(--ink)", "stroke-width": 1.5 }, c);
+    return c;
+  }
+  function mkLoco(parent) {
+    var c = el("g", {}, parent);
+    el("rect", { x: -26, y: -35, width: 52, height: 35, fill: "transparent" }, c);
+    el("line", { x1: -26, y1: -5, x2: 22, y2: -5, stroke: "var(--ink)", "stroke-width": 2 }, c);
+    el("rect", { x: -21, y: -7, width: 44, height: 3.5, fill: "var(--ink)" }, c);
+    el("path", { d: "M9 -19 L10.5 -28 L17.5 -28 L19 -19 Z", fill: "var(--ink)" }, c);
+    el("rect", { x: 8, y: -31.5, width: 12, height: 3.8, rx: 1.9, fill: "var(--ink)" }, c);
+    el("rect", { x: -3, y: -20, width: 26, height: 14, rx: 6, fill: "var(--wood-dark)", stroke: "var(--ink)", "stroke-width": 1.8 }, c);
+    el("line", { x1: 5, y1: -19.2, x2: 5, y2: -6.8, stroke: "var(--wood)", "stroke-width": 2 }, c);
+    el("line", { x1: 15, y1: -19.2, x2: 15, y2: -6.8, stroke: "var(--wood)", "stroke-width": 2 }, c);
+    el("rect", { x: -21, y: -27, width: 19, height: 21, fill: "var(--wood)", stroke: "var(--ink)", "stroke-width": 1.8 }, c);
+    el("rect", { x: -17, y: -23, width: 11, height: 8, rx: 1.5, fill: "var(--card)", stroke: "var(--ink)", "stroke-width": 1.4 }, c);
+    el("circle", { cx: -11.5, cy: -18.6, r: 2.8, fill: "var(--ink)" }, c);
+    el("rect", { x: -24, y: -31, width: 25, height: 4.5, rx: 1.8, fill: "var(--red)", stroke: "var(--ink)", "stroke-width": 1.6 }, c);
+    el("circle", { cx: 24, cy: -13, r: 3, fill: "var(--warn)", stroke: "var(--ink)", "stroke-width": 1.5 }, c);
+    [-14, -1, 12].forEach(function (cx) {
+      el("circle", { cx: cx, cy: -2.6, r: 3.3, fill: "var(--card)", stroke: "var(--ink)", "stroke-width": 1.8 }, c);
+      el("circle", { cx: cx, cy: -2.6, r: 0.9, fill: "var(--ink)" }, c);
+    });
+    return c;
+  }
+  function buildLoopBraces(parent) {
+    var xL = 1e9, xR = -1e9, i, cy = Y0 - LOOP.R, topX = LOOP.ex + LOOP.D / 2, topY = cy - LOOP.R;
+    for (i = loopFrom; i < loopTo; i++) { xL = Math.min(xL, P[i][0]); xR = Math.max(xR, P[i][0]); }
+    var g = el("g", { stroke: "var(--wood-dark)", "stroke-width": 3.2, "stroke-linecap": "round", fill: "none" }, parent);
+    el("line", { x1: xL, y1: cy, x2: xL, y2: GROUND }, g);
+    el("line", { x1: xR, y1: cy, x2: xR, y2: GROUND }, g);
+    el("line", { x1: xL, y1: cy, x2: topX, y2: topY + 2 }, g);
+    el("line", { x1: xR, y1: cy, x2: topX, y2: topY + 2 }, g);
+    el("line", { x1: xL, y1: cy, x2: xR, y2: cy, "stroke-width": 2.2 }, g);
+  }
+  function setCarAt(c, s) {
+    var p = pose(s);
+    c.setAttribute("transform", "translate(" + (p.x + DX / 2).toFixed(1) + " " + (p.y + DY / 2 - 0.5).toFixed(1) + ") rotate(" + p.ang.toFixed(1) + ") scale(" + CAR_SCALE + ")");
+  }
+
+  // ---- Gerüst: feste Felder, Pfosten, Riegel auf festen Höhen, Kreuzstreben ----
+  function buildFrame(parent, withBraces) {
+    var W = 272 / 13, H = 32, xs = [], tops = [], k, i;
+    for (k = -21; k <= 35; k++) { var x = 46 + k * W; xs.push(x); tops.push(Math.min(GROUND, supportY(x) + 6)); }
+    var braces = el("g", { stroke: "var(--wood)", "stroke-width": 1.5, fill: "none" }, parent);
+    var ledgers = el("g", { stroke: "var(--wood-dark)", "stroke-width": 2.6 }, parent);
+    var posts = el("g", { stroke: "var(--wood-dark)", "stroke-width": 3.6 }, parent);
+    for (i = 0; i < xs.length; i++) {
+      if (GROUND - tops[i] > 4) el("line", { x1: xs[i], x2: xs[i], y1: tops[i], y2: GROUND }, posts);
+    }
+    for (i = 0; i < xs.length - 1; i++) {
+      var hi = Math.max(tops[i], tops[i + 1]), lo = Math.min(tops[i], tops[i + 1]);
+      for (var j = 0; ; j++) {
+        var yb = GROUND - j * H, yt = GROUND - (j + 1) * H;
+        if (yt >= hi) {
+          el("line", { x1: xs[i], x2: xs[i + 1], y1: yt, y2: yt }, ledgers);
+          if (withBraces) {
+            el("line", { x1: xs[i], y1: yb, x2: xs[i + 1], y2: yt }, braces);
+            el("line", { x1: xs[i], y1: yt, x2: xs[i + 1], y2: yb }, braces);
+          }
+        } else {
+          if (withBraces && yb >= hi && yb - lo > 14) {
+            if (tops[i + 1] < tops[i]) el("line", { x1: xs[i], y1: yb, x2: xs[i + 1], y2: tops[i + 1] }, braces);
+            else el("line", { x1: xs[i + 1], y1: yb, x2: xs[i], y2: tops[i] }, braces);
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  var decor, zones, veil, bgTrain, bgCars = [], fgCar;
+
+  function buildWorld() {
+    var d = pathD(), i;
+
+    // Boden (Erde)
+    el("rect", { x: -1500, y: GROUND + 8, width: 3000, height: 1200, fill: "var(--wood-dark)", "fill-opacity": ".22" }, svg);
+
+    // Kulisse: Sonne, Wolken, Bäume (verblasst beim Heranzoomen)
+    decor = el("g", {}, svg);
+    el("circle", { cx: 400, cy: -300, r: 34, fill: "var(--warn)", "fill-opacity": ".55" }, decor);
+    [[-230, -250], [-40, -140], [250, -260], [470, -160], [610, -250]].forEach(function (c) {
+      var g = el("g", { fill: "var(--line)", "fill-opacity": ".8" }, decor);
+      el("ellipse", { cx: c[0], cy: c[1], rx: 52, ry: 15 }, g);
+      el("ellipse", { cx: c[0] - 22, cy: c[1] - 12, rx: 26, ry: 16 }, g);
+      el("ellipse", { cx: c[0] + 14, cy: c[1] - 16, rx: 30, ry: 19 }, g);
+    });
+    [-310, -190, -30, 395, 540, 670].forEach(function (x) {
+      el("rect", { x: x - 2.5, y: GROUND + DY - 18, width: 5, height: 18, fill: "var(--wood-dark)" }, decor);
+      el("circle", { cx: x, cy: GROUND + DY - 26, r: 13, fill: "var(--ok)", "fill-opacity": ".6", stroke: "var(--ink)", "stroke-width": 1.5 }, decor);
+    });
+
+    // Zonenbänder (erscheinen, wenn die Kamera angekommen ist)
+    zones = el("g", { opacity: 0 }, svg);
+    var yTop = 18, y65 = yAt(67.5), y35 = yAt(37.5);
+    el("rect", { x: 0, y: yTop, width: 360, height: y65 - yTop, fill: "var(--hot)", "fill-opacity": ".09" }, zones);
+    el("rect", { x: 0, y: y65, width: 360, height: y35 - y65, fill: "var(--warn)", "fill-opacity": ".11" }, zones);
+    el("rect", { x: 0, y: y35, width: 360, height: GROUND - y35, fill: "var(--ok)", "fill-opacity": ".09" }, zones);
+    [y65, y35].forEach(function (y) {
+      el("line", { x1: 0, x2: 360, y1: y, y2: y, stroke: "var(--muted)", "stroke-opacity": ".45", "stroke-width": 1, "stroke-dasharray": "4 4" }, zones);
+    });
+    var lab = function (txt, y) { var t = el("text", { x: 10, y: y + 3, "font-size": 9.5 }, zones); t.textContent = txt; };
+    lab("KUPPE", (yTop + y65) / 2);
+    lab("LIFTHILL", (y65 + y35) / 2);
+
+    // Gerüst: hinten blass (Tiefe), vorne voll
+    var back = el("g", { transform: "translate(" + DX + " " + DY + ")", opacity: ".3" }, svg);
+    buildFrame(back, false);
+    buildFrame(svg, true);
+    buildLoopBraces(svg);
+
+    // Bodenplatte mit Vorder- und Hinterkante
+    el("rect", { x: -1500, y: GROUND + DY, width: 3000, height: 8 - DY, fill: "var(--wood)", stroke: "var(--ink)", "stroke-width": 1.5 }, svg);
+    el("line", { x1: -1500, x2: 1500, y1: GROUND, y2: GROUND, stroke: "var(--ink)", "stroke-width": 1.5 }, svg);
+
+    // Schienenkörper
+    el("path", { d: d, transform: "translate(" + DX + " " + (DY + 4) + ")", fill: "none", stroke: "var(--wood-dark)", "stroke-opacity": ".5", "stroke-width": 4, "stroke-linejoin": "round" }, svg);
+    el("path", { d: d, transform: "translate(0 4)", fill: "none", stroke: "var(--wood-dark)", "stroke-width": 5, "stroke-linejoin": "round" }, svg);
+    var ties = el("g", { stroke: "var(--wood-dark)", "stroke-width": 2.4 }, svg);
+    for (var s = 3; s < S[S.length - 1]; s += 8) {
+      var p = pose(s);
+      el("line", { x1: p.x, y1: p.y, x2: p.x + DX, y2: p.y + DY }, ties);
+    }
+    el("path", { d: d, transform: "translate(" + DX + " " + DY + ")", fill: "none", stroke: "var(--muted)", "stroke-width": 2, "stroke-linejoin": "round" }, svg);
+    el("path", { d: d, fill: "none", stroke: "var(--rail)", "stroke-width": 3, "stroke-linejoin": "round" }, svg);
+
+    // Zug im Hintergrund (nur im Intro)
+    bgTrain = el("g", {}, svg);
+    bgCars = [mkCar(bgTrain, false), mkCar(bgTrain, false), mkCar(bgTrain, false), mkLoco(bgTrain)];
+
+    // Schleier um den Ausschnitt: dimmt die Umgebung beim Heranzoomen
+    veil = el("g", { fill: "var(--card)", opacity: 0 }, svg);
+    el("rect", { x: -3000, y: -3000, width: 3000, height: 6000 }, veil);
+    el("rect", { x: 360, y: -3000, width: 3000, height: 6000 }, veil);
+    el("rect", { x: 0, y: -3000, width: 360, height: 3000 }, veil);
+    el("rect", { x: 0, y: 256, width: 360, height: 3000 }, veil);
+
+    // Dein Wagen
+    fgCar = mkCar(svg, true);
+  }
+
+  function setCam(w, cy) {
+    var h = w * 256 / 360;
+    svg.setAttribute("viewBox", (XC - w / 2).toFixed(1) + " " + (cy - h / 2).toFixed(1) + " " + w.toFixed(1) + " " + h.toFixed(1));
+  }
+
+  function targetS() { return sOfX(levelToX(state.level, state.dir)); }
+  function placeCar() { setCarAt(fgCar, targetS()); }
+
+  var hintEl = document.getElementById("hint");
+  function renderLive() {
+    placeCar();
+    document.getElementById("pct").innerHTML = state.level + "<small>%</small>";
+  }
+  function renderSettled() {
+    var zk = zoneKey(state.level), z = ZONES[zk];
+    document.getElementById("zoneName").textContent = z.name;
+    document.getElementById("zoneExit").textContent = z.exit;
+    document.getElementById("sign").style.setProperty("--zone-color", z.color);
+    document.getElementById("announce").style.setProperty("--zone-color", z.color);
+    var txt = HINTS[state.dir + "-" + zk];
+    if (hintEl.textContent !== txt) {
+      hintEl.style.opacity = 0;
+      setTimeout(function () { hintEl.textContent = txt; hintEl.style.opacity = 1; }, hintEl.textContent ? 150 : 0);
+    }
+    levelEl.value = state.level;
+    document.getElementById("dirUp").setAttribute("aria-pressed", String(state.dir === "up"));
+    document.getElementById("dirDown").setAttribute("aria-pressed", String(state.dir === "down"));
+  }
+  function render() { renderLive(); renderSettled(); }
+  var settleT = 0;
+  function settleSoon(ms) { clearTimeout(settleT); settleT = setTimeout(renderSettled, ms); }
+
+  // ---- Intro: Zug fährt durch die ganze Anlage, Kamera zoomt auf die Kuppe ----
+  var introOn = false, raf = 0, t0 = 0;
+  var OFFS = [122, 84, 46, 0];
+  var T = { zoom0: 0.4, zoom1: 5.0, train1: 5.2, fg0: 3.6, fg1: 5.6, ui: 4.9, end: 5.7 };
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+  function smooth(a, b, v) { var t = clamp01((v - a) / (b - a)); return t * t * (3 - 2 * t); }
+
+  function finishIntro() {
+    if (!introOn) return;
+    introOn = false;
+    cancelAnimationFrame(raf);
+    setCam(360, 128);
+    decor.setAttribute("opacity", 0);
+    veil.setAttribute("opacity", 0.92);
+    zones.setAttribute("opacity", 1);
+    bgTrain.setAttribute("visibility", "hidden");
+    fgCar.removeAttribute("visibility");
+    document.body.classList.remove("intro");
+    document.getElementById("dragHint").textContent = "Wagen ziehen oder Regler nutzen";
+    render();
+  }
+
+  function frame(now) {
+    if (!introOn) return;
+    var t = (now - t0) / 1000;
+    var e = ease(clamp01((t - T.zoom0) / (T.zoom1 - T.zoom0)));
+    setCam(WIDE_W * Math.pow(360 / WIDE_W, e), WIDE_CY + (128 - WIDE_CY) * e);
+    decor.setAttribute("opacity", (1 - smooth(0.2, 0.85, e)).toFixed(3));
+    veil.setAttribute("opacity", (smooth(0.15, 0.85, e) * 0.92).toFixed(3));
+    zones.setAttribute("opacity", smooth(0.6, 1, e).toFixed(3));
+
+    var pt = clamp01(t / T.train1), sa = sOfX(-400), sb = sOfX(XMAX - 20) + 120;
+    var sLead = sa + (sb - sa) * pt;
+    bgCars.forEach(function (c, i) { setCarAt(c, sLead - OFFS[i]); });
+
+    var pf = clamp01((t - T.fg0) / (T.fg1 - T.fg0)), s0 = sOfX(0) - 70;
+    if (t >= T.fg0) { fgCar.removeAttribute("visibility"); setCarAt(fgCar, s0 + (targetS() - s0) * easeOut(pf)); }
+
+    if (t >= T.ui) document.body.classList.remove("intro");
+    if (t >= T.end) finishIntro(); else raf = requestAnimationFrame(frame);
+  }
+
+  function startIntro() {
+    var reduce = false;
+    try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (_) {}
+    if (reduce) { introOn = true; finishIntro(); return; }
+    introOn = true;
+    document.body.classList.add("intro");
+    document.getElementById("dragHint").textContent = "Antippen zum Überspringen";
+    fgCar.setAttribute("visibility", "hidden");
+    setCam(WIDE_W, WIDE_CY);
+    decor.setAttribute("opacity", 1);
+    t0 = performance.now();
+    raf = requestAnimationFrame(frame);
+    setTimeout(finishIntro, 9000);   // Notausgang
+  }
+
+  // ---- Ziehen: nur am Wagen (großer Griff), sonst scrollt die Seite ganz normal ----
+  var dragging = false, grabDX = 0, GRAB_PX = 48;
+  function worldX(clientX) { var r = svg.getBoundingClientRect(); return (clientX - r.left) / r.width * 360; }
+  function startDrag(cx, cy) {
+    if (introOn) { finishIntro(); return false; }
+    var r = fgCar.getBoundingClientRect();
+    if (Math.hypot(cx - (r.left + r.width / 2), cy - (r.top + r.height / 2)) > GRAB_PX) return false;
+    dragging = true;
+    grabDX = worldX(cx) - pose(targetS()).x;
+    clearTimeout(settleT);
+    return true;
+  }
+  function moveDrag(cx) {
+    var x = Math.min(XC + 135, Math.max(XC - 135, worldX(cx) - grabDX));
+    state.level = Math.round(100 * main(x) / 5) * 5;
+    state.dir = x < XC ? "up" : "down";
+    renderLive();
+  }
+  function endDrag() { if (dragging) { dragging = false; settleSoon(450); } }
+  svg.addEventListener("touchstart", function (e) { var t = e.touches[0]; if (startDrag(t.clientX, t.clientY)) e.preventDefault(); }, { passive: false });
+  svg.addEventListener("touchmove", function (e) { if (dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX); } }, { passive: false });
+  svg.addEventListener("touchend", endDrag);
+  svg.addEventListener("touchcancel", endDrag);
+  svg.addEventListener("mousedown", function (e) { startDrag(e.clientX, e.clientY); });
+  window.addEventListener("mousemove", function (e) { if (dragging) moveDrag(e.clientX); });
+  window.addEventListener("mouseup", endDrag);
+
+  levelEl.addEventListener("input", function () { state.level = +levelEl.value; renderLive(); settleSoon(450); });
+  document.getElementById("dirUp").addEventListener("click", function () { state.dir = "up"; render(); });
+  document.getElementById("dirDown").addEventListener("click", function () { state.dir = "down"; render(); });
+
+  // ---- Fahrten ----
+  var KEY = "achterbahn.v2", OLD = "achterbahn.fahrten", rides = [];
+  var CHECKIN_MIN = 30, TIMEOUT_H = 6;
+  try {
+    rides = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!Array.isArray(rides)) {
+      rides = [];
+      var old = JSON.parse(localStorage.getItem(OLD) || "[]");
+      if (Array.isArray(old)) rides = old.map(function (o) {
+        return { id: o.id, start: o.t, end: o.t, endReason: "alt", points: [{ t: o.t, level: o.level, dir: o.dir }], note: o.note || "" };
+      });
+    }
+  } catch (_) { rides = []; }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(rides.slice(0, 200))); } catch (_) {} }
+  function openRide() { return rides.length && !rides[0].end ? rides[0] : null; }
+  function lastPt(r) { return r.points[r.points.length - 1]; }
+  function expire() {
+    var r = openRide();
+    if (!r) return false;
+    var idle = Date.now() - lastPt(r).t, peak = Math.max.apply(null, r.points.map(function (p) { return p.level; }));
+    if (idle > TIMEOUT_H * 3600000) { r.end = lastPt(r).t; r.endReason = "timeout"; persist(); return true; }
+    if (idle >= CHECKIN_MIN * 60000 && peak <= 35) { r.end = lastPt(r).t; r.endReason = "ruhig"; persist(); return true; }
+    return false;
+  }
+  function fmtDur(ms) {
+    var m = Math.round(ms / 60000);
+    if (m < 1) return "unter 1 Min.";
+    if (m < 60) return m + " Min.";
+    return Math.floor(m / 60) + " Std." + (m % 60 ? " " + (m % 60) + " Min." : "");
+  }
+  var arrow = function (d) { return d === "up" ? "↗" : "↘"; };
+
+  var statusEl = document.getElementById("status"), flashT = 0;
+  function flash(msg) {
+    statusEl.textContent = msg;
+    clearTimeout(flashT);
+    flashT = setTimeout(function () { statusEl.textContent = ""; }, 4000);
+  }
+
+  function capture() {
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (_) {}
+    expire();
+    var now = Date.now(), r = openRide();
+    if (!r) { r = { id: now, start: now, end: null, points: [], note: "" }; rides.unshift(r); }
+    r.points.push({ t: now, level: state.level, dir: state.dir });
+    var msg = "Festgehalten: " + state.level + " % " + arrow(state.dir);
+    var peak = Math.max.apply(null, r.points.map(function (p) { return p.level; }));
+    if (state.level <= 35 && state.dir === "down" && peak > 35) { r.end = now; r.endReason = "station"; msg += ". Fahrt beendet, du bist zurück in der Station."; }
+    persist(); renderRides(); renderRideUi(); flash(msg);
+  }
+  function endRide() {
+    var r = openRide(); if (!r) return;
+    r.end = Date.now(); r.endReason = "manual";
+    persist(); renderRides(); renderRideUi(); flash("Fahrt beendet.");
+  }
+
+  function renderRideUi() {
+    var r = openRide(), info = document.getElementById("rideInfo"), btn = document.getElementById("endRide"), ci = document.getElementById("checkin");
+    if (!r) { info.textContent = "Keine Fahrt offen"; btn.hidden = true; ci.hidden = true; return; }
+    var n = r.points.length, since = Date.now() - r.start, idle = Date.now() - lastPt(r).t;
+    info.textContent = (since < 60000 ? "Fahrt gerade gestartet" : "Fahrt läuft seit " + fmtDur(since)) + " · " + n + (n === 1 ? " Punkt" : " Punkte");
+    btn.hidden = false;
+    if (idle >= CHECKIN_MIN * 60000) {
+      var lp = lastPt(r);
+      document.getElementById("ciTitle").textContent = "Fahrt läuft seit " + fmtDur(since) + ".";
+      document.getElementById("ciSub").textContent = "Letzter Stand vor " + fmtDur(idle) + ": " + lp.level + " % " + arrow(lp.dir) + ". Wie steht's?";
+      ci.hidden = false;
+    } else ci.hidden = true;
+  }
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function spark(points) {
+    var W = 300, Hh = 64, pad = 8, t0 = points[0].t, t1 = points[points.length - 1].t, span = t1 - t0;
+    var sv = document.createElementNS(SVGNS, "svg");
+    sv.setAttribute("viewBox", "0 0 " + W + " " + Hh); sv.setAttribute("class", "spark"); sv.setAttribute("aria-hidden", "true");
+    var Y = function (l) { return Hh - pad - (l / 100) * (Hh - 2 * pad); };
+    var X = function (t) { return points.length === 1 || !span ? W / 2 : pad + ((t - t0) / span) * (W - 2 * pad); };
+    [37.5, 67.5].forEach(function (l) {
+      var ln = document.createElementNS(SVGNS, "line");
+      ln.setAttribute("x1", 0); ln.setAttribute("x2", W); ln.setAttribute("y1", Y(l)); ln.setAttribute("y2", Y(l));
+      ln.setAttribute("stroke", "var(--muted)"); ln.setAttribute("stroke-opacity", ".4"); ln.setAttribute("stroke-dasharray", "3 4");
+      sv.appendChild(ln);
+    });
+    if (points.length > 1) {
+      var pl = document.createElementNS(SVGNS, "polyline");
+      pl.setAttribute("points", points.map(function (p) { return X(p.t).toFixed(1) + "," + Y(p.level).toFixed(1); }).join(" "));
+      pl.setAttribute("fill", "none"); pl.setAttribute("stroke", "var(--ink)"); pl.setAttribute("stroke-width", 2.5);
+      pl.setAttribute("stroke-linejoin", "round"); pl.setAttribute("stroke-linecap", "round");
+      sv.appendChild(pl);
+    }
+    points.forEach(function (p) {
+      var c = document.createElementNS(SVGNS, "circle");
+      c.setAttribute("cx", X(p.t).toFixed(1)); c.setAttribute("cy", Y(p.level).toFixed(1)); c.setAttribute("r", 4.5);
+      c.setAttribute("fill", ZONES[zoneKey(p.level)].color); c.setAttribute("stroke", "var(--ink)"); c.setAttribute("stroke-width", 1.8);
+      sv.appendChild(c);
+    });
+    return sv;
+  }
+
+  var list = document.getElementById("tickets");
+  var REASON = { station: "Station erreicht", manual: "Beendet", timeout: "Abgelaufen", ruhig: "Ruhig" };
+  function renderRides() {
+    list.textContent = "";
+    if (!rides.length) {
+      var li0 = document.createElement("li"), p0 = document.createElement("p");
+      p0.className = "empty"; p0.textContent = "Noch keine Fahrten. Tipp auf „Festhalten“, wenn du gerade unterwegs bist.";
+      li0.appendChild(p0); list.appendChild(li0); return;
+    }
+    rides.forEach(function (r) {
+      var li = document.createElement("li"); li.className = "ticket";
+      var head = document.createElement("div"); head.className = "t-head";
+      var b = document.createElement("b");
+      b.textContent = new Date(r.start).toLocaleString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+      head.appendChild(b);
+      var tagTxt = !r.end ? "läuft" : REASON[r.endReason];
+      if (tagTxt) { var tg = document.createElement("span"); tg.className = "tag" + (!r.end ? " live" : ""); tg.textContent = tagTxt; head.appendChild(tg); }
+      var del = document.createElement("button"); del.type = "button"; del.className = "del"; del.textContent = "×"; del.setAttribute("aria-label", "Fahrt löschen");
+      var armed = false, tm = 0;
+      del.addEventListener("click", function () {
+        if (!armed) {
+          armed = true; del.textContent = "Löschen?"; del.classList.add("armed");
+          tm = setTimeout(function () { armed = false; del.textContent = "×"; del.classList.remove("armed"); }, 3000);
+        } else { clearTimeout(tm); rides = rides.filter(function (x) { return x.id !== r.id; }); persist(); renderRides(); renderRideUi(); }
+      });
+      head.appendChild(del); li.appendChild(head);
+      li.appendChild(spark(r.points));
+      var peak = Math.max.apply(null, r.points.map(function (p) { return p.level; }));
+      var n = r.points.length, dur = (r.end || lastPt(r).t) - r.start;
+      var meta = document.createElement("div"); meta.className = "t-meta";
+      meta.textContent = "Spitze " + peak + " % · " + n + (n === 1 ? " Punkt" : " Punkte") + (dur >= 60000 ? " · " + fmtDur(dur) : "");
+      li.appendChild(meta);
+      if (r.note) { var nt = document.createElement("div"); nt.className = "t-note"; nt.textContent = r.note; li.appendChild(nt); }
+      list.appendChild(li);
+    });
+  }
+  document.getElementById("save").addEventListener("click", capture);
+  document.getElementById("endRide").addEventListener("click", endRide);
+  document.getElementById("ciEnd").addEventListener("click", endRide);
+  setInterval(function () { if (expire()) renderRides(); renderRideUi(); }, 30000);
+
+  // Startwert: offene Fahrt setzt den Wagen auf den letzten Stand, sonst ruhig starten
+  expire();
+  var orr = openRide();
+  if (orr) { state.level = lastPt(orr).level; state.dir = lastPt(orr).dir; } else { state.level = 20; state.dir = "up"; }
+
+  buildWorld(); render(); renderRides(); renderRideUi();
+  startIntro();
+})();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { try { navigator.serviceWorker.register("sw.js"); } catch (_) {} });
+}
+</script>
+</body>
+</html>
