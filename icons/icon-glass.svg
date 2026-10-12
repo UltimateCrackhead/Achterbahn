@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<defs>
+  <linearGradient id="bgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D9473A"/><stop offset=".5" stop-color="#9E2A24"/><stop offset="1" stop-color="#4E1110"/></linearGradient>
+  <radialGradient id="glow" cx=".28" cy=".18" r=".7"><stop offset="0" stop-color="#FFB27A" stop-opacity=".75"/><stop offset="1" stop-color="#FFB27A" stop-opacity="0"/></radialGradient>
+  <radialGradient id="glow2" cx=".85" cy=".92" r=".5"><stop offset="0" stop-color="#FF7A5C" stop-opacity=".45"/><stop offset="1" stop-color="#FF7A5C" stop-opacity="0"/></radialGradient>
+  <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".45" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".5" stop-color="#fff" stop-opacity=".25"/><stop offset="1" stop-color="#fff" stop-opacity=".7"/></linearGradient>
+  <filter id="b16" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="16"/></filter>
+  <filter id="b8" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="8"/></filter>
+  <filter id="b4" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
+  <filter id="b2" x="-30%" y="-100%" width="160%" height="300%"><feGaussianBlur stdDeviation="2.5"/></filter>
+  <filter id="sh" x="-30%" y="-150%" width="160%" height="400%"><feGaussianBlur stdDeviation="20"/></filter>
+  <g id="bg">
+    <rect x="-100" y="-100" width="1224" height="1224" fill="url(#bgG)"/>
+    <rect x="-100" y="-100" width="1224" height="1224" fill="url(#glow)"/>
+    <rect x="-100" y="-100" width="1224" height="1224" fill="url(#glow2)"/>
+    <rect x="0" y="0" width="64" height="64" fill="#F6EEDC"/><rect x="0" y="896" width="64" height="64" fill="#F6EEDC"/><rect x="128" y="0" width="64" height="64" fill="#F6EEDC"/><rect x="128" y="896" width="64" height="64" fill="#F6EEDC"/><rect x="256" y="0" width="64" height="64" fill="#F6EEDC"/><rect x="256" y="896" width="64" height="64" fill="#F6EEDC"/><rect x="384" y="0" width="64" height="64" fill="#F6EEDC"/><rect x="384" y="896" width="64" height="64" fill="#F6EEDC"/><rect x="512" y="0" width="64" height="64" fill="#F6EEDC"/><rect x="512" y="896" width="64" height="64" fill="#F6EEDC"/><rect x="640" y="0" width="64" height="64" fill="#F6EEDC"/><rect x="640" y="896" width="64" height="64" fill="#F6EEDC"/><rect x="768" y="0" width="64" height="64" fill="#F6EEDC"/><rect x="768" y="896" width="64" height="64" fill="#F6EEDC"/><rect x="896" y="0" width="64" height="64" fill="#F6EEDC"/><rect x="896" y="896" width="64" height="64" fill="#F6EEDC"/><rect x="1024" y="0" width="64" height="64" fill="#F6EEDC"/><rect x="1024" y="896" width="64" height="64" fill="#F6EEDC"/><rect x="64" y="64" width="64" height="64" fill="#F6EEDC"/><rect x="64" y="960" width="64" height="64" fill="#F6EEDC"/><rect x="192" y="64" width="64" height="64" fill="#F6EEDC"/><rect x="192" y="960" width="64" height="64" fill="#F6EEDC"/><rect x="320" y="64" width="64" height="64" fill="#F6EEDC"/><rect x="320" y="960" width="64" height="64" fill="#F6EEDC"/><rect x="448" y="64" width="64" height="64" fill="#F6EEDC"/><rect x="448" y="960" width="64" height="64" fill="#F6EEDC"/><rect x="576" y="64" width="64" height="64" fill="#F6EEDC"/><rect x="576" y="960" width="64" height="64" fill="#F6EEDC"/><rect x="704" y="64" width="64" height="64" fill="#F6EEDC"/><rect x="704" y="960" width="64" height="64" fill="#F6EEDC"/><rect x="832" y="64" width="64" height="64" fill="#F6EEDC"/><rect x="832" y="960" width="64" height="64" fill="#F6EEDC"/><rect x="960" y="64" width="64" height="64" fill="#F6EEDC"/><rect x="960" y="960" width="64" height="64" fill="#F6EEDC"/>
+  </g>
+  <rect id="rail" x="-30" y="716" width="1084" height="30" rx="15"/><rect id="chas" x="128" y="602" width="716" height="40" rx="20"/><rect id="boil" x="436" y="392" width="404" height="214" rx="86"/><path id="chim" d="M642 398 L658 296 L750 296 L766 398 Z" stroke-linejoin="round"/><rect id="cap" x="614" y="240" width="176" height="60" rx="30"/><rect id="cab" x="188" y="306" width="292" height="298" rx="30"/><rect id="roof" x="138" y="232" width="392" height="96" rx="44"/><rect id="win" x="250" y="362" width="172" height="132" rx="32"/><circle id="lamp" cx="852" cy="506" r="58"/><circle id="w1" cx="298" cy="662" r="64"/><circle id="w2" cx="486" cy="662" r="64"/><circle id="w3" cx="672" cy="662" r="64"/>
+  <clipPath id="c_rail"><use href="#rail"/></clipPath><clipPath id="c_chas"><use href="#chas"/></clipPath><clipPath id="c_boil"><use href="#boil"/></clipPath><clipPath id="c_chim"><use href="#chim"/></clipPath><clipPath id="c_cap"><use href="#cap"/></clipPath><clipPath id="c_cab"><use href="#cab"/></clipPath><clipPath id="c_roof"><use href="#roof"/></clipPath><clipPath id="c_win"><use href="#win"/></clipPath><clipPath id="c_lamp"><use href="#lamp"/></clipPath><clipPath id="c_w1"><use href="#w1"/></clipPath><clipPath id="c_w2"><use href="#w2"/></clipPath><clipPath id="c_w3"><use href="#w3"/></clipPath>
+</defs>
+<use href="#bg"/>
+
+  <g>
+    <use href="#rail" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_rail)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#rail" fill="#FFF3DC" fill-opacity="0.3"/>
+      <use href="#rail" fill="url(#sheen)"/>
+      <use href="#rail" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#rail" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      
+    </g>
+    <use href="#rail" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#chas" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_chas)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#chas" fill="#FFF3DC" fill-opacity="0.34"/>
+      <use href="#chas" fill="url(#sheen)"/>
+      <use href="#chas" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#chas" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      
+    </g>
+    <use href="#chas" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#boil" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_boil)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#boil" fill="#FFF3DC" fill-opacity="0.3"/>
+      <use href="#boil" fill="url(#sheen)"/>
+      <use href="#boil" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#boil" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      <rect x="470" y="414" width="170" height="12" rx="6.0" fill="#fff" opacity=".75" filter="url(#b2)"/>
+    </g>
+    <use href="#boil" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#chim" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_chim)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#chim" fill="#FFF3DC" fill-opacity="0.26"/>
+      <use href="#chim" fill="url(#sheen)"/>
+      <use href="#chim" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#chim" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      
+    </g>
+    <use href="#chim" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#cap" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_cap)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#cap" fill="#FFF3DC" fill-opacity="0.3"/>
+      <use href="#cap" fill="url(#sheen)"/>
+      <use href="#cap" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#cap" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      <rect x="640" y="254" width="100" height="9" rx="4.5" fill="#fff" opacity=".75" filter="url(#b2)"/>
+    </g>
+    <use href="#cap" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#cab" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_cab)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#cab" fill="#FFF3DC" fill-opacity="0.32"/>
+      <use href="#cab" fill="url(#sheen)"/>
+      <use href="#cab" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#cab" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      <rect x="212" y="324" width="120" height="10" rx="5.0" fill="#fff" opacity=".75" filter="url(#b2)"/>
+    </g>
+    <use href="#cab" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#roof" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_roof)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#roof" fill="#FF6A58" fill-opacity="0.62"/>
+      <use href="#roof" fill="url(#sheen)"/>
+      <use href="#roof" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#roof" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      <rect x="176" y="252" width="250" height="12" rx="6.0" fill="#fff" opacity=".75" filter="url(#b2)"/>
+    </g>
+    <use href="#roof" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#win" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_win)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#win" fill="#1a0604" fill-opacity="0.4"/>
+      <use href="#win" fill="url(#sheen)"/>
+      <use href="#win" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#win" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      
+    </g>
+    <use href="#win" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#lamp" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_lamp)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#lamp" fill="#FFC247" fill-opacity="0.85"/>
+      <use href="#lamp" fill="url(#sheen)"/>
+      <use href="#lamp" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#lamp" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      
+    </g>
+    <use href="#lamp" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#w1" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_w1)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#w1" fill="#FFF3DC" fill-opacity="0.34"/>
+      <use href="#w1" fill="url(#sheen)"/>
+      <use href="#w1" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#w1" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      
+    </g>
+    <use href="#w1" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#w2" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_w2)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#w2" fill="#FFF3DC" fill-opacity="0.34"/>
+      <use href="#w2" fill="url(#sheen)"/>
+      <use href="#w2" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#w2" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      
+    </g>
+    <use href="#w2" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+  <g>
+    <use href="#w3" fill="#1a0604" opacity=".5" filter="url(#sh)" transform="translate(0 20)"/>
+    <g clip-path="url(#c_w3)">
+      <use href="#bg" filter="url(#b16)" transform="translate(512 512) scale(1.07) translate(-512 -512)"/>
+      <use href="#w3" fill="#FFF3DC" fill-opacity="0.34"/>
+      <use href="#w3" fill="url(#sheen)"/>
+      <use href="#w3" fill="none" stroke="#2a0805" stroke-opacity=".42" stroke-width="26" filter="url(#b8)" transform="translate(-5 -11)"/>
+      <use href="#w3" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="12" filter="url(#b4)" transform="translate(4 7)"/>
+      
+    </g>
+    <use href="#w3" fill="none" stroke="url(#rim)" stroke-width="4.5"/>
+  </g>
+</svg>
