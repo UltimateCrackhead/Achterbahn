@@ -1,5 +1,5 @@
 // Offline-Hülle: Seite zuerst aus dem Netz (damit Updates ankommen), sonst aus dem Cache.
-const CACHE = "achterbahn-v2";
+const CACHE = "achterbahn-v4";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {

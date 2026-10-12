@@ -63,7 +63,55 @@ body { background: var(--bg); color: var(--ink); font-family: var(--font-body); 
 .after { transition: opacity .7s ease; }
 body.intro .after { opacity: 0; pointer-events: none; }
 
-header { display: flex; flex-direction: column; gap: 2px; }
+header { display: flex; flex-direction: column; gap: 2px; overflow: hidden; max-height: 140px; transition: max-height .7s ease, opacity .5s ease, margin .7s ease; }
+body.hide-title header { max-height: 0; opacity: 0; margin-bottom: -14px; }
+.view { display: flex; flex-direction: column; gap: 14px; }
+.view[hidden] { display: none; }
+.log-form { display: flex; flex-direction: column; gap: 8px; }
+.drag-hint { margin: 2px 8px 0; font-size: 13px; color: var(--muted); text-align: center; }
+.drag-hint[hidden] { display: none; }
+.track-card .readout { border-top: 2px solid var(--line); margin-top: 8px; }
+.big .dirc { margin-left: 8px; color: var(--muted); display: inline-block; line-height: 0; }
+.big .dirc .ar { width: 30px; height: 30px; vertical-align: -3px; }
+.sign .zone { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.sign .zone .ar { width: 17px; height: 17px; flex: none; }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--card); border-top: 2px solid var(--ink); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.tabs .in { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 520px; margin-inline: auto; }
+.tabs button { font: inherit; font-weight: 700; font-size: 15px; min-height: 56px; background: none; border: 0; color: var(--muted); cursor: pointer; }
+.tabs button[aria-current="page"] { color: var(--ink); box-shadow: inset 0 4px 0 var(--red); }
+body.intro .tabs { opacity: 0; pointer-events: none; }
+.tabs { transition: opacity .7s ease; }
+.sk { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; min-height: 44px; font: inherit; background: none; border: 0; border-top: 1px solid var(--line); color: var(--ink); padding: 0; text-align: left; cursor: pointer; }
+.sk b { font-size: 16px; }
+.sk i { font-style: normal; color: var(--muted); font-size: 18px; }
+.sk-d { font-size: 15px; color: var(--muted); padding: 0 0 8px; }
+.sk-d[hidden] { display: none; }
+.sos { margin: 0; font-size: 14px; font-weight: 600; color: var(--ink); }
+.sos[hidden] { display: none; }
+.sos a { color: var(--ink); }
+.skills { gap: 0 !important; }
+body.sheet-open { overflow: hidden; }
+.sheet-back { position: fixed; inset: 0; z-index: 30; background: rgba(20, 12, 6, .55); }
+.sheet-back[hidden], .sheet[hidden] { display: none; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 31; max-width: 520px; margin-inline: auto; max-height: 82vh; display: flex; flex-direction: column; background: var(--card); border: 2px solid var(--ink); border-bottom: 0; border-radius: 22px 22px 0 0; animation: sheetIn .25s ease-out; }
+@keyframes sheetIn { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+.sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 16px 6px; }
+.sheet-head h2 { margin: 0; }
+.sheet-head .sub { font-size: 14px; color: var(--muted); }
+.sheet-body { overflow-y: auto; padding: 4px 16px 8px; display: flex; flex-direction: column; gap: 10px; -webkit-overflow-scrolling: touch; }
+.sheet-body .cap, .settings .cap, .set-body .cap { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.sheet-foot { padding: 10px 16px calc(14px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); }
+.wrap { padding-bottom: 96px; }
+.actbar { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom, 0px)); z-index: 19; background: var(--bg); border-top: 2px solid var(--line); padding: 10px 16px 6px; gap: 2px; align-items: center; transition: opacity .7s ease; }
+.actbar > * { width: 100%; max-width: 488px; }
+.actrow { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.actrow .primary { min-height: 48px; font-size: 18px; }
+.actrow .secondary[hidden] { display: none; }
+.actbar .status { min-height: 0; margin: 0; font-size: 13px; }
+.rideinfo { margin: 0; font-size: 13px; font-weight: 600; color: var(--muted); }
+body.intro .actbar { opacity: 0; pointer-events: none; }
+#viewRide { padding-bottom: 96px; }
 .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(44px, 15vw, 64px); line-height: 1; margin: 0; letter-spacing: -0.02em; text-wrap: balance; }
 
@@ -71,7 +119,6 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(44px, 
 .track-card { padding: 0 0 10px; overflow: hidden; }
 svg { display: block; width: 100%; height: auto; touch-action: auto; user-select: none; -webkit-user-select: none; }
 svg text { font-family: var(--font-body); fill: var(--muted); font-weight: 700; letter-spacing: .1em; }
-.drag-hint { margin: 4px 8px 0; font-size: 13px; color: var(--muted); text-align: center; }
 
 .readout { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; }
 .big { font-family: var(--font-display); font-weight: 800; font-size: 64px; line-height: .9; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
@@ -80,14 +127,6 @@ svg text { font-family: var(--font-body); fill: var(--muted); font-weight: 700; 
 .sign .zone { font-family: var(--font-display); font-weight: 800; font-size: 20px; line-height: 1; padding: 7px 14px; border-radius: 999px; color: var(--card); background: var(--zone-color, var(--ok)); border: 2px solid var(--ink); }
 .sign .exit { font-size: 13px; font-weight: 600; color: var(--muted); }
 
-.controls { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
-.controls label.cap { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; background: transparent; margin: 0; }
-input[type=range]::-webkit-slider-runnable-track { height: 12px; border-radius: 8px; box-shadow: 0 0 0 2px var(--ink); background: linear-gradient(90deg, var(--ok) calc(17px + (100% - 34px) * .375), var(--warn) calc(17px + (100% - 34px) * .375) calc(17px + (100% - 34px) * .675), var(--hot) calc(17px + (100% - 34px) * .675)); }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 34px; height: 34px; margin-top: -11px; border-radius: 50%; background: var(--red); border: 3px solid var(--ink); box-shadow: 0 2px 0 var(--ink); }
-input[type=range]::-moz-range-track { height: 12px; border-radius: 8px; box-shadow: 0 0 0 2px var(--ink); background: linear-gradient(90deg, var(--ok) calc(14px + (100% - 28px) * .375), var(--warn) calc(14px + (100% - 28px) * .375) calc(14px + (100% - 28px) * .675), var(--hot) calc(14px + (100% - 28px) * .675)); }
-input[type=range]::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: var(--red); border: 3px solid var(--ink); box-sizing: border-box; }
-input[type=range]:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 8px; }
 
 .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .seg button, .primary { font: inherit; font-weight: 700; min-height: 48px; border-radius: 999px; border: 2px solid var(--ink); background: var(--card); color: var(--ink); cursor: pointer; padding-inline: 14px; }
@@ -100,7 +139,6 @@ button:active { transform: translateY(1px); }
 .announce .cap { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .announce p { transition: opacity .15s ease; margin: 0; font-size: 18px; font-weight: 600; text-wrap: pretty; }
 
-.log-form { display: flex; flex-direction: column; gap: 10px; }
 input[type=text], input[type=tel] { font: inherit; min-height: 48px; width: 100%; border: 2px solid var(--ink); border-radius: 12px; padding-inline: 14px; background: var(--card); color: var(--ink); }
 input[type=text]::placeholder, input[type=tel]::placeholder { color: var(--muted); }
 
@@ -137,11 +175,6 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
 .call { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--ink); background: var(--ink); color: var(--card); font-weight: 700; text-decoration: none; }
 .call.plain { background: transparent; color: var(--ink); }
 .linkbtn { font: inherit; font-weight: 700; background: none; border: 0; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; min-height: 44px; padding: 0; text-align: left; cursor: pointer; align-self: flex-start; }
-.review { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; border-left-width: 10px; border-left-color: var(--red); }
-.review[hidden] { display: none; }
-.review h2 { margin: 0; }
-.review .sub { font-size: 14px; color: var(--muted); margin-top: -6px; }
-.review .cap, .settings .cap { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { font: inherit; font-weight: 600; font-size: 15px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 2px solid var(--ink); background: var(--card); color: var(--ink); cursor: pointer; }
 .chip[aria-pressed="true"] { background: var(--red); color: var(--on-red); }
@@ -176,93 +209,94 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     <button id="ciEnd" class="secondary" type="button">Fahrt beenden</button>
   </section>
 
-  <section class="card track-card" aria-label="Bahnstrecke">
-    <svg id="track" viewBox="0 0 360 256" role="img" aria-label="Glockenförmige Holzachterbahn. Der Wagen zeigt deine aktuelle Auslastung."></svg>
-    <p class="drag-hint" id="dragHint">Wagen ziehen oder Regler nutzen</p>
-  </section>
+  <div class="view" id="viewRide">
+    <section class="card track-card" aria-label="Bahnstrecke">
+      <svg id="track" viewBox="0 0 360 256" tabindex="0" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="20" aria-label="Auslastung. Mit Pfeiltasten verschieben, oder den Wagen ziehen."></svg>
+      <p class="drag-hint" id="dragHint">Wagen ziehen oder auf die Bahn tippen</p>
+      <div class="readout after" aria-label="Anzeige">
+        <div class="big" id="pct" aria-hidden="true">45<small>%</small></div>
+        <div class="sign" id="sign" style="--zone-color: var(--warn)">
+          <span class="zone" id="zoneName">Lifthill</span>
+          <span class="exit" id="zoneExit">Ausstieg noch möglich</span>
+        </div>
+      </div>
+    </section>
 
-  <section class="card readout after" aria-label="Anzeige">
-    <div class="big" id="pct" aria-hidden="true">45<small>%</small></div>
-    <div class="sign" id="sign" style="--zone-color: var(--warn)">
-      <span class="zone" id="zoneName">Lifthill</span>
-      <span class="exit" id="zoneExit">Ausstieg noch möglich</span>
-    </div>
-  </section>
+    <section class="card announce after" id="announce" style="--zone-color: var(--warn)" aria-live="polite">
+      <div id="annBody">
+        <p id="hint"></p>
+        <ul class="skills" id="skills"></ul>
+        <button id="moreBtn" class="linkbtn" type="button" hidden>Mehr</button>
+        <p class="sos" id="sos" hidden>Akut in Not: <a href="tel:112">112</a> · Telefonseelsorge <a href="tel:08001110111">0800 111 0 111</a></p>
+      </div>
+    </section>
 
-  <section class="card controls after" aria-label="Eingabe">
-    <label class="cap" for="level">Auslastung, 0 Schlaf bis 100 Platzen</label>
-    <input id="level" type="range" min="0" max="100" step="5" value="20">
-    <label class="cap" id="dirCap">Wie entwickelt es sich gerade?</label>
-    <div class="seg" role="group" aria-labelledby="dirCap">
-      <button id="dirUp" type="button" aria-pressed="true">↗ Wird mehr</button>
-      <button id="dirDown" type="button" aria-pressed="false">↘ Lässt nach</button>
-    </div>
-  </section>
+    <section class="log-form actbar after">
+      <div class="actrow">
+        <button id="save" class="primary" type="button">Festhalten</button>
+        <button id="endRide" class="secondary" type="button" hidden>Fahrt beenden</button>
+      </div>
+      <p class="status" id="status" aria-live="polite"></p>
+      <p class="rideinfo" id="rideInfo">Keine Fahrt offen</p>
+    </section>
+  </div>
 
-  <section class="card announce after" id="announce" style="--zone-color: var(--warn)" aria-live="polite">
-    <span class="cap">Durchsage</span>
-    <div id="annBody">
-      <p id="hint"></p>
-      <ul class="skills" id="skills"></ul>
-      <button id="moreBtn" class="linkbtn" type="button" hidden>Mehr</button>
-    </div>
-  </section>
+  <div class="view" id="viewBook" hidden>
+    <h2>Fahrtenbuch</h2>
+    <ul class="tickets" id="tickets"></ul>
+    <p class="foot" id="bkNudge" hidden>Sichere dein Fahrtenbuch ab und zu als Datei (unter „Einstellungen“).</p>
+    <p class="foot">Ein Hilfsmittel, kein Ersatz für Therapie. Akut in Not: 112 oder Telefonseelsorge 0800 111 0 111 (kostenlos, rund um die Uhr).</p>
+  </div>
 
-  <section class="log-form after">
-    <button id="save" class="primary" type="button">Festhalten</button>
-    <p class="status" id="status" aria-live="polite"></p>
-    <div class="rideline">
-      <span id="rideInfo">Keine Fahrt offen</span>
-      <button id="endRide" class="secondary" type="button" hidden>Fahrt beenden</button>
-    </div>
-  </section>
+  <div class="view" id="viewSet" hidden>
+    <h2>Einstellungen</h2>
+    <section class="card">
+      <div class="set-body" style="padding-top:16px">
+        <span class="cap">Kontakte für die Durchsage</span>
+        <div class="set-row"><input id="c0n" type="text" placeholder="Name" autocomplete="off" aria-label="Kontakt 1, Name"><input id="c0t" type="tel" placeholder="Nummer" autocomplete="off" aria-label="Kontakt 1, Nummer"></div>
+        <div class="set-row"><input id="c1n" type="text" placeholder="Name" autocomplete="off" aria-label="Kontakt 2, Name"><input id="c1t" type="tel" placeholder="Nummer" autocomplete="off" aria-label="Kontakt 2, Nummer"></div>
+        <p>Bleibt nur auf diesem Gerät und ist nicht im Code der App.</p>
+        <span class="cap">Sicherung</span>
+        <div class="seg">
+          <button id="bkOut" type="button">Als Datei sichern</button>
+          <button id="bkIn" type="button">Wiederherstellen</button>
+        </div>
+        <input id="bkFile" type="file" accept="application/json,.json" hidden>
+        <p id="bkInfo"></p>
+        <p id="bkMsg" aria-live="polite"></p>
+      </div>
+    </section>
+    <p class="foot">Ein Hilfsmittel, kein Ersatz für Therapie. Akut in Not: 112 oder Telefonseelsorge 0800 111 0 111 (kostenlos, rund um die Uhr).</p>
+  </div>
+</main>
 
-  <section class="card review after" id="review" hidden aria-live="polite">
-    <h2>Was war's?</h2>
-    <div class="sub" id="rvSub"></div>
+<nav class="tabs after" aria-label="Bereiche"><div class="in">
+  <button type="button" data-view="ride" aria-current="page">Fahrt</button>
+  <button type="button" data-view="book">Fahrtenbuch</button>
+  <button type="button" data-view="set">Einstellungen</button>
+</div></nav>
+
+<div class="sheet-back" id="sheetBack" hidden></div>
+<section class="sheet" id="review" role="dialog" aria-modal="true" aria-labelledby="rvTitle" hidden tabindex="-1">
+  <div class="sheet-head">
+    <div><h2 id="rvTitle">Was war's?</h2><div class="sub" id="rvSub"></div></div>
+    <button id="rvSkip" class="secondary" type="button">Überspringen</button>
+  </div>
+  <div class="sheet-body">
     <span class="cap" id="capTrig">Auslöser</span>
     <div class="chips" id="chipsTrig" role="group" aria-labelledby="capTrig"></div>
     <span class="cap" id="capHelp">Was hat geholfen</span>
     <div class="chips" id="chipsHelp" role="group" aria-labelledby="capHelp"></div>
     <input id="rvNote" type="text" maxlength="280" placeholder="Noch etwas? (optional)" aria-label="Notiz, optional">
-    <div class="rv-actions">
-      <button id="rvDone" class="primary" type="button">Fertig</button>
-      <button id="rvSkip" class="secondary" type="button">Überspringen</button>
-    </div>
-  </section>
-
-  <section class="after">
-    <h2>Fahrtenbuch</h2>
-    <ul class="tickets" id="tickets"></ul>
-    <p class="foot" id="bkNudge" hidden>Sichere dein Fahrtenbuch ab und zu als Datei (unten bei „Einstellungen und Sicherung“).</p>
-  </section>
-
-  <details class="card settings after" id="settings">
-    <summary>Einstellungen und Sicherung</summary>
-    <div class="set-body">
-      <span class="cap">Kontakte für die Durchsage</span>
-      <div class="set-row"><input id="c0n" type="text" placeholder="Name" autocomplete="off" aria-label="Kontakt 1, Name"><input id="c0t" type="tel" placeholder="Nummer" autocomplete="off" aria-label="Kontakt 1, Nummer"></div>
-      <div class="set-row"><input id="c1n" type="text" placeholder="Name" autocomplete="off" aria-label="Kontakt 2, Name"><input id="c1t" type="tel" placeholder="Nummer" autocomplete="off" aria-label="Kontakt 2, Nummer"></div>
-      <p>Bleibt nur auf diesem Gerät und ist nicht im Code der App.</p>
-      <span class="cap">Sicherung</span>
-      <div class="seg">
-        <button id="bkOut" type="button">Als Datei sichern</button>
-        <button id="bkIn" type="button">Wiederherstellen</button>
-      </div>
-      <input id="bkFile" type="file" accept="application/json,.json" hidden>
-      <p id="bkInfo"></p>
-      <p id="bkMsg" aria-live="polite"></p>
-    </div>
-  </details>
-
-  <p class="foot after">Ein Hilfsmittel, kein Ersatz für Therapie. Akut in Not: 112 oder Telefonseelsorge 0800 111 0 111 (kostenlos, rund um die Uhr).</p>
-</main>
+  </div>
+  <div class="sheet-foot"><button id="rvDone" class="primary" type="button">Fertig</button></div>
+</section>
 
 <script>
 (function () {
   var NS = "http://www.w3.org/2000/svg";
   var XC = 180, SX = 49;                       // Hauptkuppe: Mitte und Breite
-  var Y0 = 210, Y1 = 36, GROUND = 228;         // Schienenhöhe bei 0 und bei 100, Bodenkante
+  var Y0 = 210, Y1 = 50, GROUND = 228;         // Schienenhöhe bei 0 und bei 100, Bodenkante
   var DX = 7, DY = -6;                         // Tiefenversatz der hinteren Schiene
   var XMIN = -440, XMAX = 800, STEP = 3;       // Länge der ganzen Anlage
   var CAR_SCALE = 1.2;
@@ -327,7 +361,6 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
   function setMeta(m) { try { localStorage.setItem(META, JSON.stringify(m)); } catch (_) {} }
 
   var svg = document.getElementById("track");
-  var levelEl = document.getElementById("level");
   var state = { level: 45, dir: "up" };
 
   // ---- Strecke ----
@@ -411,6 +444,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
       el("circle", { cx: cx, cy: -2.6, r: 0.9, fill: "var(--ink)" }, c);
     });
     if (lead) el("circle", { cx: 18.5, cy: -13, r: 2.8, fill: "var(--warn)", stroke: "var(--ink)", "stroke-width": 1.5 }, c);
+    c._half = 8 * CAR_SCALE;
     return c;
   }
   function mkLoco(parent) {
@@ -432,6 +466,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
       el("circle", { cx: cx, cy: -2.6, r: 3.3, fill: "var(--card)", stroke: "var(--ink)", "stroke-width": 1.8 }, c);
       el("circle", { cx: cx, cy: -2.6, r: 0.9, fill: "var(--ink)" }, c);
     });
+    c._half = 13 * CAR_SCALE;
     return c;
   }
   function buildLoopBraces(parent) {
@@ -444,9 +479,17 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     el("line", { x1: xR, y1: cy, x2: topX, y2: topY + 2 }, g);
     el("line", { x1: xL, y1: cy, x2: xR, y2: cy, "stroke-width": 2.2 }, g);
   }
-  function setCarAt(c, s) {
-    var p = pose(s);
-    c.setAttribute("transform", "translate(" + (p.x + DX / 2).toFixed(1) + " " + (p.y + DY / 2 - 0.5).toFixed(1) + ") rotate(" + p.ang.toFixed(1) + ") scale(" + CAR_SCALE + ")");
+  function setCarAt(c, s, half) {
+    half = half || c._half || 9.6;           // halber Achsabstand in Weltmaßen
+    var d = half, a, b, k;
+    for (k = 0; k < 6; k++) {                // Abstand so wählen, dass die Achsen genau half auseinander liegen
+      a = pose(s - d); b = pose(s + d);
+      var ch = Math.hypot(b.x - a.x, b.y - a.y) / 2;
+      if (ch < 0.01) break;
+      d *= half / ch;
+    }
+    var mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+    c.setAttribute("transform", "translate(" + (mx + DX / 2).toFixed(2) + " " + (my + DY / 2 - 0.5).toFixed(2) + ") rotate(" + ang.toFixed(2) + ") scale(" + CAR_SCALE + ")");
   }
 
   // ---- Gerüst: feste Felder, Pfosten, Riegel auf festen Höhen, Kreuzstreben ----
@@ -504,7 +547,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
 
     // Zonenbänder (erscheinen, wenn die Kamera angekommen ist)
     zones = el("g", { opacity: 0 }, svg);
-    var yTop = 18, y65 = yAt(67.5), y35 = yAt(37.5);
+    var yTop = 8, y65 = yAt(67.5), y35 = yAt(37.5);
     el("rect", { x: 0, y: yTop, width: 360, height: y65 - yTop, fill: "var(--hot)", "fill-opacity": ".09" }, zones);
     el("rect", { x: 0, y: y65, width: 360, height: y35 - y65, fill: "var(--warn)", "fill-opacity": ".11" }, zones);
     el("rect", { x: 0, y: y35, width: 360, height: GROUND - y35, fill: "var(--ok)", "fill-opacity": ".09" }, zones);
@@ -557,7 +600,21 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
   }
 
   function targetS() { return sOfX(levelToX(state.level, state.dir)); }
-  function placeCar() { setCarAt(fgCar, targetS()); }
+  var REDUCE = false;
+  try { REDUCE = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (_) {}
+  var carS = null, goalS = 0, carRaf = 0, carT = 0;
+  function carStep(now) {
+    var dt = Math.min(0.05, Math.max(0, (now - carT) / 1000)); carT = now;
+    carS += (goalS - carS) * (1 - Math.exp(-dt / 0.07));
+    if (Math.abs(goalS - carS) < 0.05) { carS = goalS; carRaf = 0; } else carRaf = requestAnimationFrame(carStep);
+    setCarAt(fgCar, carS);
+  }
+  function placeCar() {
+    if (introOn || endAnim || dragging) return;      // dort führt der Ablauf den Wagen selbst
+    goalS = targetS();
+    if (carS === null || REDUCE) { cancelAnimationFrame(carRaf); carRaf = 0; carS = goalS; setCarAt(fgCar, carS); return; }
+    if (!carRaf) { carT = performance.now(); carRaf = requestAnimationFrame(carStep); }
+  }
 
   var hintEl = document.getElementById("hint"), annBody = document.getElementById("annBody");
   var skillsEl = document.getElementById("skills"), moreBtn = document.getElementById("moreBtn");
@@ -571,24 +628,27 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     list.forEach(function (sk, i) {
       var li = document.createElement("li");
       if (i >= SHOW_N) { li.className = "more"; li.hidden = !showAll; }
-      var b = document.createElement("b"); b.textContent = sk.t; li.appendChild(b);
-      var sp = document.createElement("span"); sp.textContent = sk.d; li.appendChild(sp);
-      if (sk.calls) {
-        var named = settings.contacts.filter(function (c) { return c.n; });
-        if (named.length) {
-          var row = document.createElement("div"); row.className = "calls";
-          named.forEach(function (c) {
-            var a = document.createElement(c.t ? "a" : "span");
-            a.className = "call" + (c.t ? "" : " plain");
-            a.textContent = c.n + (c.t ? " anrufen" : "");
-            if (c.t) a.href = telHref(c.t);
-            row.appendChild(a);
-          });
-          li.appendChild(row);
-        }
-      }
+      var hd = document.createElement("button"); hd.type = "button"; hd.className = "sk"; hd.setAttribute("aria-expanded", "false");
+      var b = document.createElement("b"); b.textContent = sk.t; var ic = document.createElement("i"); ic.textContent = "+"; ic.setAttribute("aria-hidden", "true");
+      hd.appendChild(b); hd.appendChild(ic); li.appendChild(hd);
+      var dd = document.createElement("div"); dd.className = "sk-d"; dd.textContent = sk.d; dd.hidden = true; li.appendChild(dd);
+      hd.addEventListener("click", function () { var o = dd.hidden; dd.hidden = !o; ic.textContent = o ? "−" : "+"; hd.setAttribute("aria-expanded", String(o)); });
       skillsEl.appendChild(li);
     });
+    var old = document.getElementById("callsTop"); if (old) old.remove();
+    var named = settings.contacts.filter(function (c) { return c.n; });
+    if (skillGroup(state.dir, zoneKey(state.level)) === "kuppe" && named.length) {
+      var row = document.createElement("div"); row.className = "calls"; row.id = "callsTop";
+      named.forEach(function (c) {
+        var a = document.createElement(c.t ? "a" : "span");
+        a.className = "call" + (c.t ? "" : " plain");
+        a.textContent = c.n + (c.t ? " anrufen" : "");
+        if (c.t) a.href = telHref(c.t);
+        row.appendChild(a);
+      });
+      annBody.insertBefore(row, skillsEl);
+    }
+    document.getElementById("sos").hidden = zoneKey(state.level) !== "kuppe";
     var extra = list.length > SHOW_N;
     moreBtn.hidden = !extra;
     moreBtn.textContent = showAll ? "Weniger" : "Mehr";
@@ -608,20 +668,23 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     moreBtn.textContent = showAll ? "Weniger" : "Mehr";
     moreBtn.setAttribute("aria-expanded", String(showAll));
   });
-  function renderLive() {
-    placeCar();
-    document.getElementById("pct").innerHTML = state.level + "<small>%</small>";
+  function renderLive() { placeCar(); renderReadout(); }
+  function renderReadout() {
+    setPct();
+    svg.setAttribute("aria-valuenow", state.level);
+    svg.setAttribute("aria-valuetext", state.level + " Prozent, " + ZONES[zoneKey(state.level)].name + ", " + (state.dir === "up" ? "wird mehr" : "lässt nach"));
   }
+  function arrowSvg(dir) {
+    return '<svg class="ar" viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(' + (dir === "up" ? -45 : 45) + ' 12 12)" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M13 5l7 7-7 7"/></g></svg>';
+  }
+  function setPct() { document.getElementById("pct").innerHTML = state.level + "<small>%</small><span class=\"dirc\">" + arrowSvg(state.dir) + "</span>"; }
   function renderSettled() {
     var zk = zoneKey(state.level), z = ZONES[zk];
-    document.getElementById("zoneName").textContent = z.name;
+    document.getElementById("zoneName").innerHTML = z.name + (zk === "station" && state.dir === "up" ? "" : arrowSvg(state.dir));
     document.getElementById("zoneExit").textContent = z.exit;
     document.getElementById("sign").style.setProperty("--zone-color", z.color);
     document.getElementById("announce").style.setProperty("--zone-color", z.color);
     refreshAnnounce(false);
-    levelEl.value = state.level;
-    document.getElementById("dirUp").setAttribute("aria-pressed", String(state.dir === "up"));
-    document.getElementById("dirDown").setAttribute("aria-pressed", String(state.dir === "down"));
   }
   function render() { renderLive(); renderSettled(); }
   var settleT = 0;
@@ -638,7 +701,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
 
   function finishIntro() {
     if (!introOn) return;
-    introOn = false;
+    introOn = false; carS = null;
     cancelAnimationFrame(raf);
     setCam(360, 128);
     decor.setAttribute("opacity", 0);
@@ -646,8 +709,9 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     zones.setAttribute("opacity", 1);
     bgTrain.setAttribute("visibility", "hidden");
     fgCar.removeAttribute("visibility");
-    document.body.classList.remove("intro");
-    document.getElementById("dragHint").textContent = "Wagen ziehen oder Regler nutzen";
+    document.body.classList.remove("intro"); document.body.classList.add("hide-title");
+    renderReview();
+    document.getElementById("dragHint").textContent = "Wagen ziehen oder auf die Bahn tippen";
     render();
   }
 
@@ -667,7 +731,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     var pf = clamp01((t - T.fg0) / (T.fg1 - T.fg0)), s0 = sOfX(0) - 70;
     if (t >= T.fg0) { fgCar.removeAttribute("visibility"); setCarAt(fgCar, s0 + (targetS() - s0) * easeOut(pf)); }
 
-    if (t >= T.ui) document.body.classList.remove("intro");
+    if (t >= T.ui) { document.body.classList.remove("intro"); document.body.classList.add("hide-title"); }
     if (t >= T.end) finishIntro(); else raf = requestAnimationFrame(frame);
   }
 
@@ -677,6 +741,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     if (reduce) { introOn = true; finishIntro(); return; }
     introOn = true;
     document.body.classList.add("intro");
+    renderReview();
     document.getElementById("dragHint").textContent = "Antippen zum Überspringen";
     fgCar.setAttribute("visibility", "hidden");
     setCam(WIDE_W, WIDE_CY);
@@ -692,9 +757,9 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
   function resetToStart() { state.level = 20; state.dir = "up"; }
   function stopEndAnim(toStart) {      // toStart: Zielzustand übernehmen; sonst Wagen zurück an den aktuellen Stand
     if (!endAnim) return;
-    cancelAnimationFrame(endAnim.raf); endAnim = null;
+    cancelAnimationFrame(endAnim.raf); endAnim = null; carS = null;
     if (toStart) resetToStart();
-    render();
+    render(); renderReview();
   }
   function startEndAnim() {
     if (introOn) return;
@@ -712,7 +777,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
       else if (t < tOut) { var u = (t - END_HOLD) / END_OUT; setCarAt(fgCar, sFrom + (sOff - sFrom) * u * u); }
       else if (t < tIn) { setCarAt(fgCar, sOff); }
       else if (t < tIn + END_IN) {
-        if (!a.switched) { a.switched = true; resetToStart(); document.getElementById("pct").innerHTML = state.level + "<small>%</small>"; renderSettled(); }
+        if (!a.switched) { a.switched = true; resetToStart(); setPct(); renderSettled(); }
         var v = (t - tIn) / END_IN; setCarAt(fgCar, sIn0 + (sTo - sIn0) * easeOut(v));
       } else { stopEndAnim(true); return; }
       a.raf = requestAnimationFrame(step);
@@ -724,12 +789,13 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
   var dragging = false, grabDX = 0, GRAB_PX = 48;
   function worldX(clientX) { var r = svg.getBoundingClientRect(); return (clientX - r.left) / r.width * 360; }
   function startDrag(cx, cy) {
-    if (introOn) { finishIntro(); return false; }
-    if (endAnim) { stopEndAnim(true); return false; }
+    if (introOn) { noClickUntil = Date.now() + 500; finishIntro(); return false; }
+    if (endAnim) { noClickUntil = Date.now() + 500; stopEndAnim(true); return false; }
     var r = fgCar.getBoundingClientRect();
     if (Math.hypot(cx - (r.left + r.width / 2), cy - (r.top + r.height / 2)) > GRAB_PX) return false;
-    dragging = true;
-    grabDX = worldX(cx) - pose(targetS()).x;
+    dragging = true; hideHint();
+    cancelAnimationFrame(carRaf); carRaf = 0;
+    grabDX = worldX(cx) - pose(carS !== null ? carS : targetS()).x;
     clearTimeout(settleT);
     return true;
   }
@@ -737,9 +803,10 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     var x = Math.min(XC + 135, Math.max(XC - 135, worldX(cx) - grabDX));
     state.level = Math.round(100 * main(x) / 5) * 5;
     state.dir = x < XC ? "up" : "down";
-    renderLive();
+    carS = goalS = sOfX(x); setCarAt(fgCar, carS);   // Wagen folgt dem Finger stufenlos, nur die Prozent rasten
+    renderReadout();
   }
-  function endDrag() { if (dragging) { dragging = false; settleSoon(450); } }
+  function endDrag() { if (dragging) { dragging = false; noClickUntil = Date.now() + 350; placeCar(); settleSoon(450); } }
   svg.addEventListener("touchstart", function (e) { var t = e.touches[0]; if (startDrag(t.clientX, t.clientY)) e.preventDefault(); }, { passive: false });
   svg.addEventListener("touchmove", function (e) { if (dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX); } }, { passive: false });
   svg.addEventListener("touchend", endDrag);
@@ -748,9 +815,29 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
   window.addEventListener("mousemove", function (e) { if (dragging) moveDrag(e.clientX); });
   window.addEventListener("mouseup", endDrag);
 
-  levelEl.addEventListener("input", function () { stopEndAnim(false); state.level = +levelEl.value; renderLive(); settleSoon(450); });
-  document.getElementById("dirUp").addEventListener("click", function () { stopEndAnim(false); state.dir = "up"; render(); });
-  document.getElementById("dirDown").addEventListener("click", function () { stopEndAnim(false); state.dir = "down"; render(); });
+  // Tippen auf die Bahn setzt den Wagen dorthin (links vom Gipfel = wird mehr, rechts = lässt nach)
+  var noClickUntil = 0, hintGone = false;
+  function hideHint() { if (!hintGone && !introOn) { hintGone = true; document.getElementById("dragHint").hidden = true; } }
+  function setFromX(x) {
+    x = Math.min(XC + 135, Math.max(XC - 135, x));
+    state.level = Math.round(100 * main(x) / 5) * 5;
+    state.dir = x < XC ? "up" : "down";
+  }
+  svg.addEventListener("click", function (e) {
+    if (Date.now() < noClickUntil || introOn || dragging) return;
+    stopEndAnim(false); hideHint();
+    setFromX(worldX(e.clientX)); renderLive(); settleSoon(450);
+  });
+  // Tastatur: Pfeile fahren die Bahn entlang (0 % hoch, über die Kuppe, wieder runter)
+  svg.addEventListener("keydown", function (e) {
+    var d = e.key === "ArrowRight" || e.key === "ArrowUp" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowDown" ? -1 : 0;
+    if (!d) return;
+    e.preventDefault(); stopEndAnim(false);
+    var k = state.dir === "up" ? state.level / 5 : 40 - state.level / 5;
+    k = Math.max(0, Math.min(40, k + d));
+    if (k <= 20) { state.level = k * 5; state.dir = "up"; } else { state.level = (40 - k) * 5; state.dir = "down"; }
+    renderLive(); settleSoon(450);
+  });
 
   // ---- Fahrten ----
   var KEY = "achterbahn.v2", OLD = "achterbahn.fahrten", rides = [];
@@ -801,14 +888,12 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     var msg = "Festgehalten: " + state.level + " % " + arrow(state.dir);
     var peak = Math.max.apply(null, r.points.map(function (p) { return p.level; }));
     if (state.level <= 35 && state.dir === "down" && peak > 35) { r.end = now; r.endReason = "station"; msg += ". Fahrt beendet, du bist zurück in der Station."; }
-    persist(); refreshAll(); flash(msg);
-    if (r.end) startEndAnim();
+    persist(); if (r.end) startEndAnim(); refreshAll(); flash(msg);
   }
   function endRide() {
     var r = openRide(); if (!r) return;
     r.end = Date.now(); r.endReason = "manual";
-    persist(); refreshAll(); flash("Fahrt beendet.");
-    startEndAnim();
+    persist(); startEndAnim(); refreshAll(); flash("Fahrt beendet.");
   }
 
   function renderRideUi() {
@@ -892,16 +977,18 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     });
   }
   function renderReview() {
-    var card = $("review"), r = reviewId !== null ? rideById(reviewId) : pendingReview();
-    if (!r || !r.end) { card.hidden = true; shownId = null; return; }
-    card.hidden = false;
+    var card = $("review"), back = $("sheetBack"), r = reviewId !== null ? rideById(reviewId) : pendingReview();
+    if (!r || !r.end || (reviewId === null && (endAnim || introOn))) { card.hidden = true; back.hidden = true; document.body.classList.remove("sheet-open"); shownId = null; return; }
+    var wasHidden = card.hidden;
+    card.hidden = false; back.hidden = false; document.body.classList.add("sheet-open");
+    if (wasHidden) { try { card.focus({ preventScroll: true }); } catch (_) {} }
     if (shownId === r.id) return;          // schon aufgebaut: Chips nicht umsortieren
     shownId = r.id;
     $("rvSub").textContent = new Date(r.start).toLocaleString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) + " · Spitze " + peakOf(r) + " %";
     chipRow($("chipsTrig"), byUse(TRIG, "triggers"), "triggers", r);
     chipRow($("chipsHelp"), byUse(HELP, "helped"), "helped", r);
     $("rvNote").value = r.note || "";
-    $("rvSkip").hidden = reviewId !== null || r.reviewed !== undefined;
+    $("rvSkip").textContent = reviewId !== null ? "Schließen" : "Überspringen";
   }
   function closeReview(status) {
     var r = reviewId !== null ? rideById(reviewId) : pendingReview();
@@ -916,10 +1003,16 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     if (r) { r.note = $("rvNote").value.slice(0, 280); persist(); renderRides(); }
   });
   $("rvDone").addEventListener("click", function () { closeReview("done"); });
-  $("rvSkip").addEventListener("click", function () { closeReview("skipped"); });
+  function dismissReview() {
+    var r = reviewId !== null ? rideById(reviewId) : pendingReview();
+    closeReview(r && r.reviewed ? r.reviewed : "skipped");
+  }
+  $("rvSkip").addEventListener("click", dismissReview);
+  $("sheetBack").addEventListener("click", dismissReview);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("review").hidden) dismissReview(); });
   function editRide(r) {
     reviewId = r.id; shownId = null; renderReview();
-    var card = $("review"); try { card.scrollIntoView({ block: "center" }); } catch (_) {}
+
   }
 
   // ---- Einstellungen, Sicherung ----
@@ -1003,6 +1096,19 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     rd.readAsText(f);
   }
 
+  // ---- Bereiche (Tabs) ----
+  var VIEWS = { ride: "viewRide", book: "viewBook", set: "viewSet" };
+  function showView(v) {
+    Object.keys(VIEWS).forEach(function (k) { $(VIEWS[k]).hidden = k !== v; });
+    Array.prototype.forEach.call(document.querySelectorAll(".tabs button"), function (b) {
+      if (b.getAttribute("data-view") === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+    });
+    try { window.scrollTo(0, 0); } catch (_) {}
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".tabs button"), function (b) {
+    b.addEventListener("click", function () { showView(b.getAttribute("data-view")); });
+  });
+
   var list = document.getElementById("tickets");
   var REASON = { station: "Station erreicht", manual: "Beendet", timeout: "Abgelaufen", ruhig: "Ruhig" };
   function renderRides() {
@@ -1067,6 +1173,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
   startIntro();
 })();
 </script>
+<script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { try { navigator.serviceWorker.register("sw.js"); } catch (_) {} });
 }
