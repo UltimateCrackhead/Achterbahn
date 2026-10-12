@@ -93,7 +93,7 @@ input[type=range]:focus-visible { outline: 3px solid var(--ink); outline-offset:
 .seg button, .primary { font: inherit; font-weight: 700; min-height: 48px; border-radius: 999px; border: 2px solid var(--ink); background: var(--card); color: var(--ink); cursor: pointer; padding-inline: 14px; }
 .seg button[aria-pressed="true"] { background: var(--red); color: var(--on-red); }
 .primary { background: var(--ink); color: var(--card); font-family: var(--font-display); font-size: 18px; width: 100%; }
-button:focus-visible, input[type=text]:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+button:focus-visible, input[type=text]:focus-visible, input[type=tel]:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
 button:active { transform: translateY(1px); }
 
 .announce { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border-left-width: 10px; border-left-color: var(--zone-color, var(--ok)); }
@@ -101,8 +101,8 @@ button:active { transform: translateY(1px); }
 .announce p { transition: opacity .15s ease; margin: 0; font-size: 18px; font-weight: 600; text-wrap: pretty; }
 
 .log-form { display: flex; flex-direction: column; gap: 10px; }
-input[type=text] { font: inherit; min-height: 48px; width: 100%; border: 2px solid var(--ink); border-radius: 12px; padding-inline: 14px; background: var(--card); color: var(--ink); }
-input[type=text]::placeholder { color: var(--muted); }
+input[type=text], input[type=tel] { font: inherit; min-height: 48px; width: 100%; border: 2px solid var(--ink); border-radius: 12px; padding-inline: 14px; background: var(--card); color: var(--ink); }
+input[type=text]::placeholder, input[type=tel]::placeholder { color: var(--muted); }
 
 h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin: 8px 0 0; letter-spacing: -0.01em; }
 .empty { color: var(--muted); padding: 16px; border: 2px dashed var(--line); border-radius: 12px; margin: 0; }
@@ -126,8 +126,39 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
 .t-meta { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .t-note { font-size: 14px; overflow-wrap: anywhere; }
 .empty { color: var(--muted); padding: 16px; border: 2px dashed var(--line); border-radius: 12px; margin: 0; }
-</style>
 
+#annBody { display: flex; flex-direction: column; gap: 10px; transition: opacity .15s ease; }
+.skills { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.skills li { display: flex; flex-direction: column; gap: 2px; }
+.skills b { font-size: 16px; }
+.skills span { font-size: 15px; color: var(--muted); }
+.skills .more[hidden] { display: none; }
+.calls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.call { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--ink); background: var(--ink); color: var(--card); font-weight: 700; text-decoration: none; }
+.call.plain { background: transparent; color: var(--ink); }
+.linkbtn { font: inherit; font-weight: 700; background: none; border: 0; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; min-height: 44px; padding: 0; text-align: left; cursor: pointer; align-self: flex-start; }
+.review { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; border-left-width: 10px; border-left-color: var(--red); }
+.review[hidden] { display: none; }
+.review h2 { margin: 0; }
+.review .sub { font-size: 14px; color: var(--muted); margin-top: -6px; }
+.review .cap, .settings .cap { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: inherit; font-weight: 600; font-size: 15px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 2px solid var(--ink); background: var(--card); color: var(--ink); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--red); color: var(--on-red); }
+.rv-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.rv-actions .secondary[hidden] { display: none; }
+.settings { padding: 0; }
+.settings summary { cursor: pointer; padding: 14px 16px; font-family: var(--font-display); font-weight: 800; font-size: 18px; list-style: none; }
+.settings summary::-webkit-details-marker { display: none; }
+.settings summary::after { content: "＋"; float: right; }
+.settings[open] summary::after { content: "−"; }
+.set-body { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.set-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.set-body p { margin: 0; font-size: 14px; color: var(--muted); }
+.set-body .seg button { min-height: 48px; }
+.t-tags { font-size: 14px; color: var(--ink); }
+.t-tags em { font-style: normal; color: var(--muted); }
+</style>
 </head>
 <body>
 <div class="checker" aria-hidden="true"></div>
@@ -170,7 +201,11 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
 
   <section class="card announce after" id="announce" style="--zone-color: var(--warn)" aria-live="polite">
     <span class="cap">Durchsage</span>
-    <p id="hint"></p>
+    <div id="annBody">
+      <p id="hint"></p>
+      <ul class="skills" id="skills"></ul>
+      <button id="moreBtn" class="linkbtn" type="button" hidden>Mehr</button>
+    </div>
   </section>
 
   <section class="log-form after">
@@ -182,10 +217,43 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     </div>
   </section>
 
+  <section class="card review after" id="review" hidden aria-live="polite">
+    <h2>Was war's?</h2>
+    <div class="sub" id="rvSub"></div>
+    <span class="cap" id="capTrig">Auslöser</span>
+    <div class="chips" id="chipsTrig" role="group" aria-labelledby="capTrig"></div>
+    <span class="cap" id="capHelp">Was hat geholfen</span>
+    <div class="chips" id="chipsHelp" role="group" aria-labelledby="capHelp"></div>
+    <input id="rvNote" type="text" maxlength="280" placeholder="Noch etwas? (optional)" aria-label="Notiz, optional">
+    <div class="rv-actions">
+      <button id="rvDone" class="primary" type="button">Fertig</button>
+      <button id="rvSkip" class="secondary" type="button">Überspringen</button>
+    </div>
+  </section>
+
   <section class="after">
     <h2>Fahrtenbuch</h2>
     <ul class="tickets" id="tickets"></ul>
+    <p class="foot" id="bkNudge" hidden>Sichere dein Fahrtenbuch ab und zu als Datei (unten bei „Einstellungen und Sicherung“).</p>
   </section>
+
+  <details class="card settings after" id="settings">
+    <summary>Einstellungen und Sicherung</summary>
+    <div class="set-body">
+      <span class="cap">Kontakte für die Durchsage</span>
+      <div class="set-row"><input id="c0n" type="text" placeholder="Name" autocomplete="off" aria-label="Kontakt 1, Name"><input id="c0t" type="tel" placeholder="Nummer" autocomplete="off" aria-label="Kontakt 1, Nummer"></div>
+      <div class="set-row"><input id="c1n" type="text" placeholder="Name" autocomplete="off" aria-label="Kontakt 2, Name"><input id="c1t" type="tel" placeholder="Nummer" autocomplete="off" aria-label="Kontakt 2, Nummer"></div>
+      <p>Bleibt nur auf diesem Gerät und ist nicht im Code der App.</p>
+      <span class="cap">Sicherung</span>
+      <div class="seg">
+        <button id="bkOut" type="button">Als Datei sichern</button>
+        <button id="bkIn" type="button">Wiederherstellen</button>
+      </div>
+      <input id="bkFile" type="file" accept="application/json,.json" hidden>
+      <p id="bkInfo"></p>
+      <p id="bkMsg" aria-live="polite"></p>
+    </div>
+  </details>
 
   <p class="foot after">Ein Hilfsmittel, kein Ersatz für Therapie. Akut in Not: 112 oder Telefonseelsorge 0800 111 0 111 (kostenlos, rund um die Uhr).</p>
 </main>
@@ -208,13 +276,55 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     kuppe:   { name: "Kuppe", exit: "Bügel geschlossen", color: "var(--hot)" }
   };
   var HINTS = {
-    "up-station":   "Der Wagen rollt an. Jetzt ist aussteigen am leichtesten: Ort wechseln, Wasser trinken, einmal lang ausatmen.",
-    "up-lift":      "Die Kette zieht an, aber der Notausstieg ist noch da. Geh raus aus der Situation, such Abstand und atme länger aus als ein. Von hier ist der Weg zurück kurz.",
-    "up-kuppe":     "Gleich über der Kuppe. Jetzt zählt Sicherheit: Situation verlassen, nichts Wichtiges entscheiden oder schreiben, jemanden anrufen, der dich kennt.",
-    "down-kuppe":   "Du bist in der Abfahrt, und sie geht vorbei. Bügel geschlossen lassen, nichts Neues anfangen. Langsam ausatmen, Füße am Boden spüren.",
-    "down-lift":    "Es geht bergab. Nicht wieder hochfahren: etwas trinken, bewegen, ruhig beschäftigen, Reize runter.",
-    "down-station": "Einfahrt in die Station. Halte kurz fest, was geholfen hat, und trag die Fahrt ein."
+    "up-station":   "Der Wagen rollt an. Jetzt ist aussteigen am leichtesten.",
+    "up-lift":      "Die Kette zieht an, der Notausstieg ist noch da. Der Weg zurück ist von hier kurz.",
+    "up-kuppe":     "Gleich über der Kuppe. Jetzt zählt Sicherheit, nichts Wichtiges entscheiden.",
+    "down-kuppe":   "Du bist in der Abfahrt, und sie geht vorbei. Bügel geschlossen lassen, nichts Neues anfangen.",
+    "down-lift":    "Es geht bergab. Nicht wieder hochfahren.",
+    "down-station": "Einfahrt in die Station. Halte fest, was geholfen hat, und trag die Fahrt ein."
   };
+  // Skills: pro Gruppe, die ersten SHOW_N sofort, der Rest unter "Mehr"
+  var SHOW_N = 3;
+  var SKILLS = {
+    station: [
+      { t: "Länger ausatmen", d: "4 Sekunden ein, 6 aus, fünfmal." },
+      { t: "Trinken oder essen", d: "Ein Glas Wasser, eine Kleinigkeit." },
+      { t: "Benennen", d: "Sag oder schreib: „Ich bin bei 30, es steigt, wegen …“" },
+      { t: "Kurze Runde gehen", d: "Etwa 5 Minuten, ohne Ziel." }
+    ],
+    lift: [
+      { t: "Raus an die Luft", d: "Zügige Runde im Park oder um den Block, etwa 10 Minuten." },
+      { t: "Auszeit ansagen", d: "„Ich brauche 20 Minuten, ich melde mich.“" },
+      { t: "Muskeln anspannen und lösen", d: "Fäuste, Schultern, Beine: 5 Sekunden fest, dann loslassen." },
+      { t: "Schreiben, nicht senden", d: "Die Nachricht tippen, aber nicht abschicken." }
+    ],
+    kuppe: [
+      { t: "Stehen bleiben oder hinsetzen", d: "Abstand schaffen, nichts entscheiden." },
+      { t: "Anrufen", d: "Jemanden, der dich kennt. Niemand erreichbar: rausgehen, Kopfhörer auf.", calls: true },
+      { t: "Kopfhörer und Musik", d: "Reize runter, etwas Ruhiges oder Vertrautes." }
+    ],
+    abstieg: [
+      { t: "Trinken und essen", d: "Wasser, eine Kleinigkeit." },
+      { t: "Ruhig weitergehen", d: "Nichts Neues anfangen, Reize niedrig halten." },
+      { t: "Fahrt eintragen", d: "Festhalten, und danach kurz notieren, was war." }
+    ]
+  };
+  function skillGroup(dir, zk) { return dir === "up" ? zk : (zk === "kuppe" ? "kuppe" : "abstieg"); }
+
+
+  // ---- Einstellungen (nur auf dem Gerät) ----
+  var SETKEY = "achterbahn.settings", META = "achterbahn.meta";
+  var settings = { contacts: [{ n: "", t: "" }, { n: "", t: "" }] };
+  try {
+    var st = JSON.parse(localStorage.getItem(SETKEY) || "null");
+    if (st && Array.isArray(st.contacts)) [0, 1].forEach(function (i) {
+      var c = st.contacts[i] || {};
+      settings.contacts[i] = { n: String(c.n || "").slice(0, 40), t: String(c.t || "").slice(0, 30) };
+    });
+  } catch (_) {}
+  function saveSettings() { try { localStorage.setItem(SETKEY, JSON.stringify(settings)); } catch (_) {} }
+  function getMeta() { try { return JSON.parse(localStorage.getItem(META) || "{}") || {}; } catch (_) { return {}; } }
+  function setMeta(m) { try { localStorage.setItem(META, JSON.stringify(m)); } catch (_) {} }
 
   var svg = document.getElementById("track");
   var levelEl = document.getElementById("level");
@@ -449,7 +559,55 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
   function targetS() { return sOfX(levelToX(state.level, state.dir)); }
   function placeCar() { setCarAt(fgCar, targetS()); }
 
-  var hintEl = document.getElementById("hint");
+  var hintEl = document.getElementById("hint"), annBody = document.getElementById("annBody");
+  var skillsEl = document.getElementById("skills"), moreBtn = document.getElementById("moreBtn");
+  var annKey = "", showAll = false;
+  function telHref(t) { return "tel:" + String(t).replace(/[^+\d]/g, ""); }
+  function buildAnnounce() {
+    var key = state.dir + "-" + zoneKey(state.level);
+    hintEl.textContent = HINTS[key];
+    var list = SKILLS[skillGroup(state.dir, zoneKey(state.level))];
+    skillsEl.textContent = "";
+    list.forEach(function (sk, i) {
+      var li = document.createElement("li");
+      if (i >= SHOW_N) { li.className = "more"; li.hidden = !showAll; }
+      var b = document.createElement("b"); b.textContent = sk.t; li.appendChild(b);
+      var sp = document.createElement("span"); sp.textContent = sk.d; li.appendChild(sp);
+      if (sk.calls) {
+        var named = settings.contacts.filter(function (c) { return c.n; });
+        if (named.length) {
+          var row = document.createElement("div"); row.className = "calls";
+          named.forEach(function (c) {
+            var a = document.createElement(c.t ? "a" : "span");
+            a.className = "call" + (c.t ? "" : " plain");
+            a.textContent = c.n + (c.t ? " anrufen" : "");
+            if (c.t) a.href = telHref(c.t);
+            row.appendChild(a);
+          });
+          li.appendChild(row);
+        }
+      }
+      skillsEl.appendChild(li);
+    });
+    var extra = list.length > SHOW_N;
+    moreBtn.hidden = !extra;
+    moreBtn.textContent = showAll ? "Weniger" : "Mehr";
+    moreBtn.setAttribute("aria-expanded", String(showAll));
+  }
+  function refreshAnnounce(force) {
+    var key = state.dir + "-" + zoneKey(state.level);
+    if (!force && key === annKey) return;
+    var first = !annKey;
+    annKey = key; showAll = false;
+    annBody.style.opacity = 0;
+    setTimeout(function () { buildAnnounce(); annBody.style.opacity = 1; }, first ? 0 : 150);
+  }
+  moreBtn.addEventListener("click", function () {
+    showAll = !showAll;
+    Array.prototype.forEach.call(skillsEl.querySelectorAll(".more"), function (li) { li.hidden = !showAll; });
+    moreBtn.textContent = showAll ? "Weniger" : "Mehr";
+    moreBtn.setAttribute("aria-expanded", String(showAll));
+  });
   function renderLive() {
     placeCar();
     document.getElementById("pct").innerHTML = state.level + "<small>%</small>";
@@ -460,11 +618,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     document.getElementById("zoneExit").textContent = z.exit;
     document.getElementById("sign").style.setProperty("--zone-color", z.color);
     document.getElementById("announce").style.setProperty("--zone-color", z.color);
-    var txt = HINTS[state.dir + "-" + zk];
-    if (hintEl.textContent !== txt) {
-      hintEl.style.opacity = 0;
-      setTimeout(function () { hintEl.textContent = txt; hintEl.style.opacity = 1; }, hintEl.textContent ? 150 : 0);
-    }
+    refreshAnnounce(false);
     levelEl.value = state.level;
     document.getElementById("dirUp").setAttribute("aria-pressed", String(state.dir === "up"));
     document.getElementById("dirDown").setAttribute("aria-pressed", String(state.dir === "down"));
@@ -532,11 +686,46 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     setTimeout(finishIntro, 9000);   // Notausgang
   }
 
+  // ---- Fahrt-Ende: Wagen bleibt kurz stehen, fährt rechts ins Off, kommt links zurück zur Station ----
+  var endAnim = null;
+  var END_HOLD = 2600, END_OUT = 1300, END_GAP = 300, END_IN = 1500;
+  function resetToStart() { state.level = 20; state.dir = "up"; }
+  function stopEndAnim(toStart) {      // toStart: Zielzustand übernehmen; sonst Wagen zurück an den aktuellen Stand
+    if (!endAnim) return;
+    cancelAnimationFrame(endAnim.raf); endAnim = null;
+    if (toStart) resetToStart();
+    render();
+  }
+  function startEndAnim() {
+    if (introOn) return;
+    stopEndAnim(false);
+    var reduce = false;
+    try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (_) {}
+    var a = { t0: performance.now(), raf: 0, switched: false };
+    endAnim = a;
+    var sFrom = targetS(), sOff = sOfX(430), sIn0 = sOfX(-45), sTo = sOfX(levelToX(20, "up"));
+    function step(now) {
+      if (endAnim !== a) return;
+      var t = now - a.t0, tOut = END_HOLD + END_OUT, tIn = tOut + END_GAP;
+      if (t < END_HOLD) { /* steht */ }
+      else if (reduce) { stopEndAnim(true); return; }
+      else if (t < tOut) { var u = (t - END_HOLD) / END_OUT; setCarAt(fgCar, sFrom + (sOff - sFrom) * u * u); }
+      else if (t < tIn) { setCarAt(fgCar, sOff); }
+      else if (t < tIn + END_IN) {
+        if (!a.switched) { a.switched = true; resetToStart(); document.getElementById("pct").innerHTML = state.level + "<small>%</small>"; renderSettled(); }
+        var v = (t - tIn) / END_IN; setCarAt(fgCar, sIn0 + (sTo - sIn0) * easeOut(v));
+      } else { stopEndAnim(true); return; }
+      a.raf = requestAnimationFrame(step);
+    }
+    a.raf = requestAnimationFrame(step);
+  }
+
   // ---- Ziehen: nur am Wagen (großer Griff), sonst scrollt die Seite ganz normal ----
   var dragging = false, grabDX = 0, GRAB_PX = 48;
   function worldX(clientX) { var r = svg.getBoundingClientRect(); return (clientX - r.left) / r.width * 360; }
   function startDrag(cx, cy) {
     if (introOn) { finishIntro(); return false; }
+    if (endAnim) { stopEndAnim(true); return false; }
     var r = fgCar.getBoundingClientRect();
     if (Math.hypot(cx - (r.left + r.width / 2), cy - (r.top + r.height / 2)) > GRAB_PX) return false;
     dragging = true;
@@ -559,9 +748,9 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
   window.addEventListener("mousemove", function (e) { if (dragging) moveDrag(e.clientX); });
   window.addEventListener("mouseup", endDrag);
 
-  levelEl.addEventListener("input", function () { state.level = +levelEl.value; renderLive(); settleSoon(450); });
-  document.getElementById("dirUp").addEventListener("click", function () { state.dir = "up"; render(); });
-  document.getElementById("dirDown").addEventListener("click", function () { state.dir = "down"; render(); });
+  levelEl.addEventListener("input", function () { stopEndAnim(false); state.level = +levelEl.value; renderLive(); settleSoon(450); });
+  document.getElementById("dirUp").addEventListener("click", function () { stopEndAnim(false); state.dir = "up"; render(); });
+  document.getElementById("dirDown").addEventListener("click", function () { stopEndAnim(false); state.dir = "down"; render(); });
 
   // ---- Fahrten ----
   var KEY = "achterbahn.v2", OLD = "achterbahn.fahrten", rides = [];
@@ -603,6 +792,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
   }
 
   function capture() {
+    stopEndAnim(false);
     try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (_) {}
     expire();
     var now = Date.now(), r = openRide();
@@ -611,12 +801,14 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     var msg = "Festgehalten: " + state.level + " % " + arrow(state.dir);
     var peak = Math.max.apply(null, r.points.map(function (p) { return p.level; }));
     if (state.level <= 35 && state.dir === "down" && peak > 35) { r.end = now; r.endReason = "station"; msg += ". Fahrt beendet, du bist zurück in der Station."; }
-    persist(); renderRides(); renderRideUi(); flash(msg);
+    persist(); refreshAll(); flash(msg);
+    if (r.end) startEndAnim();
   }
   function endRide() {
     var r = openRide(); if (!r) return;
     r.end = Date.now(); r.endReason = "manual";
-    persist(); renderRides(); renderRideUi(); flash("Fahrt beendet.");
+    persist(); refreshAll(); flash("Fahrt beendet.");
+    startEndAnim();
   }
 
   function renderRideUi() {
@@ -662,6 +854,155 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
     return sv;
   }
 
+  function refreshAll() { renderRides(); renderRideUi(); renderReview(); renderBackupInfo(); }
+  function peakOf(r) { return Math.max.apply(null, r.points.map(function (p) { return p.level; })); }
+  function rideById(id) { for (var i = 0; i < rides.length; i++) if (rides[i].id === id) return rides[i]; return null; }
+
+  // ---- "Was war's?" ----
+  var TRIG = ["Streit", "Kritik oder Ablehnung", "Stress oder Druck", "Müdigkeit", "Hunger", "Grübeln", "Einsamkeit", "Reizüberflutung", "Unklar"];
+  var HELP = ["Länger ausatmen", "Trinken oder essen", "Gehen", "Benennen", "Auszeit angesagt", "Kopfhörer oder Musik", "Mit jemandem gesprochen", "Abstand geschaffen"];
+  var reviewId = null, shownId = null;
+  var $ = function (id) { return document.getElementById(id); };
+  function pendingReview() {
+    for (var i = 0; i < rides.length; i++) {
+      var r = rides[i];
+      if (r.end && r.reviewed === undefined && peakOf(r) > 35 && Date.now() - r.end < 86400000) return r;
+    }
+    return null;
+  }
+  function byUse(list, field) {
+    var cnt = {};
+    rides.forEach(function (r) { (r[field] || []).forEach(function (k) { cnt[k] = (cnt[k] || 0) + 1; }); });
+    return list.map(function (k, i) { return { k: k, i: i }; })
+      .sort(function (a, b) { return (cnt[b.k] || 0) - (cnt[a.k] || 0) || a.i - b.i; })
+      .map(function (o) { return o.k; });
+  }
+  function chipRow(host, labels, field, r) {
+    host.textContent = "";
+    labels.forEach(function (k) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = k;
+      b.setAttribute("aria-pressed", String((r[field] || []).indexOf(k) > -1));
+      b.addEventListener("click", function () {
+        var a = r[field] || (r[field] = []), i = a.indexOf(k);
+        if (i > -1) a.splice(i, 1); else a.push(k);
+        b.setAttribute("aria-pressed", String(i === -1));
+        persist(); renderRides();
+      });
+      host.appendChild(b);
+    });
+  }
+  function renderReview() {
+    var card = $("review"), r = reviewId !== null ? rideById(reviewId) : pendingReview();
+    if (!r || !r.end) { card.hidden = true; shownId = null; return; }
+    card.hidden = false;
+    if (shownId === r.id) return;          // schon aufgebaut: Chips nicht umsortieren
+    shownId = r.id;
+    $("rvSub").textContent = new Date(r.start).toLocaleString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) + " · Spitze " + peakOf(r) + " %";
+    chipRow($("chipsTrig"), byUse(TRIG, "triggers"), "triggers", r);
+    chipRow($("chipsHelp"), byUse(HELP, "helped"), "helped", r);
+    $("rvNote").value = r.note || "";
+    $("rvSkip").hidden = reviewId !== null || r.reviewed !== undefined;
+  }
+  function closeReview(status) {
+    var r = reviewId !== null ? rideById(reviewId) : pendingReview();
+    if (r) {
+      r.reviewed = status;
+      if (reviewId === null) rides.forEach(function (o) { if (o.end && o.reviewed === undefined && o.start < r.start) o.reviewed = "skipped"; });
+    }
+    reviewId = null; shownId = null; persist(); renderReview(); renderRides();
+  }
+  $("rvNote").addEventListener("input", function () {
+    var r = reviewId !== null ? rideById(reviewId) : pendingReview();
+    if (r) { r.note = $("rvNote").value.slice(0, 280); persist(); renderRides(); }
+  });
+  $("rvDone").addEventListener("click", function () { closeReview("done"); });
+  $("rvSkip").addEventListener("click", function () { closeReview("skipped"); });
+  function editRide(r) {
+    reviewId = r.id; shownId = null; renderReview();
+    var card = $("review"); try { card.scrollIntoView({ block: "center" }); } catch (_) {}
+  }
+
+  // ---- Einstellungen, Sicherung ----
+  function initSettings() {
+    [0, 1].forEach(function (i) {
+      var n = $("c" + i + "n"), t = $("c" + i + "t");
+      n.value = settings.contacts[i].n; t.value = settings.contacts[i].t;
+      var upd = function () {
+        settings.contacts[i] = { n: n.value.trim().slice(0, 40), t: t.value.trim().slice(0, 30) };
+        saveSettings(); refreshAnnounce(true);
+      };
+      n.addEventListener("input", upd); t.addEventListener("input", upd);
+    });
+    $("bkOut").addEventListener("click", exportData);
+    $("bkIn").addEventListener("click", function () { $("bkFile").click(); });
+    $("bkFile").addEventListener("change", importData);
+    renderBackupInfo();
+  }
+  function bkMsg(t) { $("bkMsg").textContent = t; }
+  function renderBackupInfo() {
+    var m = getMeta(), info = $("bkInfo"), nudge = $("bkNudge");
+    if (!info) return;
+    info.textContent = m.lastExport ? "Letzte Sicherung: " + new Date(m.lastExport).toLocaleDateString("de-DE") : "Noch nie gesichert.";
+    nudge.hidden = !(rides.length >= 3 && (!m.lastExport || Date.now() - m.lastExport > 14 * 86400000));
+  }
+  function exportData() {
+    var json = JSON.stringify({ app: "achterbahn", v: 1, exported: new Date().toISOString(), settings: settings, rides: rides }, null, 1);
+    var name = "achterbahn-" + new Date().toISOString().slice(0, 10) + ".json", file = null;
+    try { file = new File([json], name, { type: "application/json" }); } catch (_) {}
+    var done = function () { var m = getMeta(); m.lastExport = Date.now(); setMeta(m); renderBackupInfo(); bkMsg("Gesichert: " + name); };
+    var fallback = function () {
+      try {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([json], { type: "application/json" })); a.download = name;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+        done();
+      } catch (_) { bkMsg("Sichern hat nicht geklappt."); }
+    };
+    if (file && navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: "Achterbahn Sicherung" }).then(done, function (e) { if (!e || e.name !== "AbortError") fallback(); });
+    } else fallback();
+  }
+  function cleanRide(r) {
+    if (!r || typeof r.id !== "number" || typeof r.start !== "number" || !Array.isArray(r.points) || !r.points.length) return null;
+    var pts = r.points.filter(function (p) { return p && typeof p.t === "number" && typeof p.level === "number" && (p.dir === "up" || p.dir === "down"); })
+      .map(function (p) { return { t: p.t, level: Math.max(0, Math.min(100, p.level)), dir: p.dir }; });
+    if (!pts.length) return null;
+    var strs = function (a) { return Array.isArray(a) ? a.filter(function (x) { return typeof x === "string"; }).map(function (x) { return x.slice(0, 60); }).slice(0, 30) : []; };
+    var o = { id: r.id, start: r.start, end: typeof r.end === "number" ? r.end : pts[pts.length - 1].t,
+      endReason: typeof r.endReason === "string" ? r.endReason : "alt", points: pts,
+      note: typeof r.note === "string" ? r.note.slice(0, 280) : "", triggers: strs(r.triggers), helped: strs(r.helped) };
+    if (r.reviewed === "done" || r.reviewed === "skipped") o.reviewed = r.reviewed;
+    return o;
+  }
+  function importData() {
+    var f = $("bkFile").files[0]; $("bkFile").value = "";
+    if (!f) return;
+    var rd = new FileReader();
+    rd.onerror = function () { bkMsg("Datei konnte nicht gelesen werden."); };
+    rd.onload = function () {
+      try {
+        var d = JSON.parse(rd.result);
+        if (!d || d.app !== "achterbahn" || !Array.isArray(d.rides)) throw 0;
+        var have = {}; rides.forEach(function (r) { have[r.id] = 1; });
+        var add = 0;
+        d.rides.forEach(function (r) { var c = cleanRide(r); if (c && !have[c.id]) { rides.push(c); have[c.id] = 1; add++; } });
+        rides.sort(function (a, b) { return b.start - a.start; });
+        if (d.settings && Array.isArray(d.settings.contacts) && !settings.contacts.some(function (c) { return c.n || c.t; })) {
+          [0, 1].forEach(function (i) {
+            var c = d.settings.contacts[i] || {};
+            settings.contacts[i] = { n: String(c.n || "").slice(0, 40), t: String(c.t || "").slice(0, 30) };
+            $("c" + i + "n").value = settings.contacts[i].n; $("c" + i + "t").value = settings.contacts[i].t;
+          });
+          saveSettings(); refreshAnnounce(true);
+        }
+        persist(); shownId = null; refreshAll();
+        bkMsg(add + (add === 1 ? " Fahrt" : " Fahrten") + " wiederhergestellt.");
+      } catch (_) { bkMsg("Das ist keine Achterbahn-Sicherung."); }
+    };
+    rd.readAsText(f);
+  }
+
   var list = document.getElementById("tickets");
   var REASON = { station: "Station erreicht", manual: "Beendet", timeout: "Abgelaufen", ruhig: "Ruhig" };
   function renderRides() {
@@ -685,7 +1026,7 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
         if (!armed) {
           armed = true; del.textContent = "Löschen?"; del.classList.add("armed");
           tm = setTimeout(function () { armed = false; del.textContent = "×"; del.classList.remove("armed"); }, 3000);
-        } else { clearTimeout(tm); rides = rides.filter(function (x) { return x.id !== r.id; }); persist(); renderRides(); renderRideUi(); }
+        } else { clearTimeout(tm); rides = rides.filter(function (x) { return x.id !== r.id; }); persist(); refreshAll(); }
       });
       head.appendChild(del); li.appendChild(head);
       li.appendChild(spark(r.points));
@@ -694,25 +1035,38 @@ h2 { font-family: var(--font-display); font-weight: 800; font-size: 24px; margin
       var meta = document.createElement("div"); meta.className = "t-meta";
       meta.textContent = "Spitze " + peak + " % · " + n + (n === 1 ? " Punkt" : " Punkte") + (dur >= 60000 ? " · " + fmtDur(dur) : "");
       li.appendChild(meta);
+      var tags = [];
+      if (r.triggers && r.triggers.length) tags.push(["Auslöser", r.triggers]);
+      if (r.helped && r.helped.length) tags.push(["Geholfen", r.helped]);
+      tags.forEach(function (g) {
+        var d = document.createElement("div"); d.className = "t-tags";
+        var em = document.createElement("em"); em.textContent = g[0] + ": ";
+        d.appendChild(em); d.appendChild(document.createTextNode(g[1].join(", "))); li.appendChild(d);
+      });
       if (r.note) { var nt = document.createElement("div"); nt.className = "t-note"; nt.textContent = r.note; li.appendChild(nt); }
+      if (r.end) {
+        var eb = document.createElement("button"); eb.type = "button"; eb.className = "linkbtn";
+        eb.textContent = (r.triggers && r.triggers.length) || (r.helped && r.helped.length) || r.note ? "Bearbeiten" : "Was war's?";
+        eb.addEventListener("click", function () { editRide(r); });
+        li.appendChild(eb);
+      }
       list.appendChild(li);
     });
   }
   document.getElementById("save").addEventListener("click", capture);
   document.getElementById("endRide").addEventListener("click", endRide);
   document.getElementById("ciEnd").addEventListener("click", endRide);
-  setInterval(function () { if (expire()) renderRides(); renderRideUi(); }, 30000);
+  setInterval(function () { if (expire()) renderRides(); renderRideUi(); renderReview(); }, 30000);
 
   // Startwert: offene Fahrt setzt den Wagen auf den letzten Stand, sonst ruhig starten
   expire();
   var orr = openRide();
   if (orr) { state.level = lastPt(orr).level; state.dir = lastPt(orr).dir; } else { state.level = 20; state.dir = "up"; }
 
-  buildWorld(); render(); renderRides(); renderRideUi();
+  buildWorld(); render(); refreshAll(); initSettings();
   startIntro();
 })();
 </script>
-<script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function () { try { navigator.serviceWorker.register("sw.js"); } catch (_) {} });
 }
